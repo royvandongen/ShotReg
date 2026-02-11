@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: shotregister-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      CI_ENVIRONMENT: production
+      app_baseURL: "http://localhost:8080/"
+      database_default_hostname: mysql
+      database_default_database: shotregister
+      database_default_username: shotregister
+      database_default_password: shotregister
+      database_default_DBDriver: MySQLi
+      database_default_port: "3306"
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      - uploads:/var/www/html/writable/uploads
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: shotregister-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: shotregister
+      MYSQL_DATABASE: shotregister
+      MYSQL_USER: shotregister
+      MYSQL_PASSWORD: shotregister
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+  uploads:

@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+vendor
+writable/cache/*
+writable/logs/*
+writable/session/*
+writable/debugbar/*
+writable/uploads/*
+!writable/.gitkeep
+docker-compose.yml
+*.md
+tests

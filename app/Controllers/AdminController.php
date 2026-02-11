@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\AppSettingModel;
+use App\Models\UserModel;
+use App\Models\UserOptionModel;
+
+class AdminController extends BaseController
+{
+    protected AppSettingModel $settingModel;
+
+    public function __construct()
+    {
+        $this->settingModel = new AppSettingModel();
+    }
+
+    public function settings()
+    {
+        $defaultLaneTypes = json_decode($this->settingModel->getValue('default_lane_types', '[]'), true) ?: [];
+        $defaultSightings = json_decode($this->settingModel->getValue('default_sightings', '[]'), true) ?: [];
+
+        return view('admin/settings', [
+            'registrationEnabled' => $this->settingModel->getValue('registration_enabled', '1'),
+            'force2fa'            => $this->settingModel->getValue('force_2fa', '0'),
+            'defaultLaneTypes'    => $defaultLaneTypes,
+            'defaultSightings'    => $defaultSightings,
+        ]);
+    }
+
+    public function saveSettings()
+    {
+        $registrationEnabled = $this->request->getPost('registration_enabled') ? '1' : '0';
+        $force2fa = $this->request->getPost('force_2fa') ? '1' : '0';
+
+        $this->settingModel->setValue('registration_enabled', $registrationEnabled);
+        $this->settingModel->setValue('force_2fa', $force2fa);
+
+        return redirect()->to('/admin/settings')
+                         ->with('success', 'Settings saved.');
+    }
+
+    public function addDefault()
+    {
+        $type  = $this->request->getPost('type');
+        $label = trim($this->request->getPost('label'));
+
+        if (! in_array($type, ['lane_type', 'sighting'], true) || $label === '') {
+            return redirect()->to('/admin/settings')->with('error', 'Invalid input.');
+        }
+
+        $settingKey = $type === 'lane_type' ? 'default_lane_types' : 'default_sightings';
+        $existing = json_decode($this->settingModel->getValue($settingKey, '[]'), true) ?: [];
+
+        $existing[] = ['label' => $label, 'value' => strtolower($label)];
+        $this->settingModel->setValue($settingKey, json_encode($existing));
+
+        return redirect()->to('/admin/settings')->with('success', 'Default added.');
+    }
+
+    public function deleteDefault()
+    {
+        $type  = $this->request->getPost('type');
+        $index = (int) $this->request->getPost('index');
+
+        if (! in_array($type, ['lane_type', 'sighting'], true)) {
+            return redirect()->to('/admin/settings')->with('error', 'Invalid type.');
+        }
+
+        $settingKey = $type === 'lane_type' ? 'default_lane_types' : 'default_sightings';
+        $existing = json_decode($this->settingModel->getValue($settingKey, '[]'), true) ?: [];
+
+        if (isset($existing[$index])) {
+            array_splice($existing, $index, 1);
+            $this->settingModel->setValue($settingKey, json_encode($existing));
+        }
+
+        return redirect()->to('/admin/settings')->with('success', 'Default removed.');
+    }
+
+    public function users()
+    {
+        $db = \Config\Database::connect();
+        $search = $this->request->getGet('q') ?? '';
+
+        $builder = $db->table('users')
+            ->select('users.id, users.username, users.email, users.is_admin, users.totp_enabled, users.created_at')
+            ->select('(SELECT COUNT(*) FROM weapons WHERE weapons.user_id = users.id) AS weapon_count')
+            ->select('(SELECT COUNT(*) FROM shooting_sessions WHERE shooting_sessions.user_id = users.id) AS session_count')
+            ->select('(SELECT COUNT(*) FROM locations WHERE locations.user_id = users.id) AS location_count');
+
+        if ($search !== '') {
+            $builder->groupStart()
+                    ->like('users.username', $search)
+                    ->orLike('users.email', $search)
+                    ->groupEnd();
+        }
+
+        $users = $builder->orderBy('users.created_at', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        return view('admin/users', [
+            'users'  => $users,
+            'search' => $search,
+        ]);
+    }
+
+    public function toggleAdmin(int $userId)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($userId);
+
+        if (! $user) {
+            return redirect()->to('/admin/users')
+                             ->with('error', 'User not found.');
+        }
+
+        // Prevent demoting yourself
+        if ($userId === (int) session()->get('user_id')) {
+            return redirect()->to('/admin/users')
+                             ->with('error', 'You cannot change your own admin status.');
+        }
+
+        $newStatus = $user['is_admin'] ? 0 : 1;
+        $userModel->update($userId, ['is_admin' => $newStatus]);
+
+        $action = $newStatus ? 'promoted to admin' : 'demoted from admin';
+
+        return redirect()->to('/admin/users')
+                         ->with('success', esc($user['username']) . " has been {$action}.");
+    }
+}
