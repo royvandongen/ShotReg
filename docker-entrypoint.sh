@@ -44,18 +44,39 @@ if [ -n "$database_default_hostname" ]; then
     echo "Database is ready."
 fi
 
-# Check migration status and run if needed
-echo "Checking migration status..."
-MIGRATION_STATUS_OUTPUT=$(php spark migrate:status 2>&1)
-MIGRATION_STATUS_EXIT=$?
+# Check if migrations table exists (first boot detection)
+MIGRATIONS_TABLE_EXISTS=$(php -r '
+    $host = getenv("database_default_hostname") ?: "localhost";
+    $port = (int) (getenv("database_default_port") ?: 3306);
+    $db = getenv("database_default_database") ?: "";
+    $user = getenv("database_default_username") ?: "";
+    $pass = getenv("database_default_password") ?: "";
+    $mysqli = @new mysqli($host, $user, $pass, $db, $port);
+    if ($mysqli->connect_error) { echo "error"; exit; }
+    $result = $mysqli->query("SHOW TABLES LIKE \"migrations\"");
+    echo ($result && $result->num_rows > 0) ? "yes" : "no";
+' 2>/dev/null)
 
-if [ $MIGRATION_STATUS_EXIT -ne 0 ] || echo "$MIGRATION_STATUS_OUTPUT" | grep -q "Pending"; then
-    if [ $MIGRATION_STATUS_EXIT -ne 0 ]; then
-        echo "First boot detected (no migrations table yet), running all migrations..."
-    else
+NEED_MIGRATIONS=false
+
+if [ "$MIGRATIONS_TABLE_EXISTS" = "no" ]; then
+    echo "First boot detected (no migrations table yet), running all migrations..."
+    NEED_MIGRATIONS=true
+elif [ "$MIGRATIONS_TABLE_EXISTS" = "yes" ]; then
+    echo "Checking migration status..."
+    MIGRATION_STATUS_OUTPUT=$(php spark migrate:status 2>&1)
+    if echo "$MIGRATION_STATUS_OUTPUT" | grep -q "Pending"; then
         echo "Found pending migrations, running..."
+        NEED_MIGRATIONS=true
+    else
+        echo "All migrations are up to date."
     fi
+else
+    echo "Could not check migrations table, running migrations to be safe..."
+    NEED_MIGRATIONS=true
+fi
 
+if [ "$NEED_MIGRATIONS" = "true" ]; then
     MIGRATION_OUTPUT=$(php spark migrate --all 2>&1)
     MIGRATION_EXIT=$?
 
@@ -67,14 +88,16 @@ if [ $MIGRATION_STATUS_EXIT -ne 0 ] || echo "$MIGRATION_STATUS_OUTPUT" | grep -q
         echo "$MIGRATION_OUTPUT"
         exit 1
     fi
-else
-    echo "All migrations are up to date."
 fi
 
-# Create admin user if environment variables are set
+# Create admin user if environment variables are set (only after successful migrations)
 if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_EMAIL" ] && [ -n "$ADMIN_PASSWORD" ]; then
-    echo "Creating admin user..."
-    php spark admin:create
+    if [ "$NEED_MIGRATIONS" = "true" ] && [ $MIGRATION_EXIT -ne 0 ]; then
+        echo "Skipping admin creation due to migration failure."
+    else
+        echo "Creating admin user..."
+        php spark admin:create
+    fi
 fi
 
 # Ensure writable permissions
