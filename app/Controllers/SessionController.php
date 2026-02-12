@@ -30,6 +30,12 @@ class SessionController extends BaseController
 
     protected function getFormOptions(int $userId): array
     {
+        // Seed defaults if user has no options yet
+        $existing = $this->optionModel->where('user_id', $userId)->countAllResults();
+        if ($existing === 0) {
+            $this->optionModel->seedDefaults($userId);
+        }
+
         return [
             'locations' => $this->locationModel->getForUser($userId),
             'laneTypes' => $this->optionModel->getByType($userId, 'lane_type'),
@@ -181,6 +187,35 @@ class SessionController extends BaseController
             }
         }
         return redirect()->back()->with('success', 'Photo removed.');
+    }
+
+    public function ajaxCreateLocation()
+    {
+        if (! $this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $userId = session()->get('user_id');
+        $data = $this->request->getPost();
+        $data['user_id'] = $userId;
+        $data['is_default'] = 0;
+
+        if (! $this->locationModel->validate($data)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'errors'  => $this->locationModel->errors(),
+            ]);
+        }
+
+        $id = $this->locationModel->insert($data);
+
+        return $this->response->setJSON([
+            'success'  => true,
+            'location' => [
+                'id'   => $id,
+                'name' => $data['name'],
+            ],
+        ]);
     }
 
     public function reorderPhotos()

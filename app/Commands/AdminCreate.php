@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Models\UserModel;
+use App\Models\UserOptionModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
@@ -48,12 +49,16 @@ class AdminCreate extends BaseCommand
         }
 
         // Create new admin user
-        $userModel->insert([
+        $userId = $userModel->insert([
             'username'      => $username,
             'email'         => $email,
             'password_hash' => password_hash($password, PASSWORD_DEFAULT),
             'is_admin'      => 1,
         ]);
+
+        // Seed default options (lane types, sightings)
+        $optionModel = new UserOptionModel();
+        $optionModel->seedDefaults($userId);
 
         CLI::write("Admin user '{$username}' created successfully.", 'green');
         return 0;

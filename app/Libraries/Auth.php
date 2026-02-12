@@ -4,6 +4,7 @@ namespace App\Libraries;
 
 use App\Models\AppSettingModel;
 use App\Models\UserModel;
+use App\Models\UserOptionModel;
 use PragmaRX\Google2FA\Google2FA;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -34,7 +35,13 @@ class Auth
             $data['is_admin'] = 1;
         }
 
-        return $this->userModel->insert($data);
+        $userId = $this->userModel->insert($data);
+
+        if ($userId) {
+            (new UserOptionModel())->seedDefaults($userId);
+        }
+
+        return $userId;
     }
 
     public function attemptLogin(string $usernameOrEmail, string $password): array|false

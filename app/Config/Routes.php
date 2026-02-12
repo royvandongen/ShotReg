@@ -44,6 +44,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('sessions/delete/(:num)', 'SessionController::delete/$1');
     $routes->post('sessions/delete-photo/(:num)', 'SessionController::deletePhoto/$1');
     $routes->post('sessions/reorder-photos', 'SessionController::reorderPhotos');
+    $routes->post('sessions/ajax-create-location', 'SessionController::ajaxCreateLocation');
 
     // Photo serving
     $routes->get('photos/(:segment)', 'PhotoController::show/$1');

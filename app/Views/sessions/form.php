@@ -25,23 +25,29 @@
                value="<?= esc($session['session_date'] ?? date('Y-m-d')) ?>" required>
     </div>
 
-    <?php if (! empty($locations)): ?>
     <div class="mb-3">
         <label for="location_id" class="form-label">Location</label>
-        <select class="form-select" id="location_id" name="location_id">
-            <option value="">-- No location --</option>
-            <?php foreach ($locations as $loc): ?>
-                <option value="<?= $loc['id'] ?>"
-                    <?= (($session['location_id'] ?? '') == $loc['id']) ? 'selected' : '' ?>>
-                    <?= esc($loc['name']) ?>
-                    <?php if (! empty($loc['address'])): ?>
-                        <small>(<?= esc($loc['address']) ?>)</small>
-                    <?php endif; ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+        <div class="input-group">
+            <select class="form-select" id="location_id" name="location_id">
+                <option value="">-- No location --</option>
+                <?php if (! empty($locations)): ?>
+                    <?php foreach ($locations as $loc): ?>
+                        <option value="<?= $loc['id'] ?>"
+                            <?= (($session['location_id'] ?? '') == $loc['id']) ? 'selected' : '' ?>>
+                            <?= esc($loc['name']) ?>
+                            <?php if (! empty($loc['address'])): ?>
+                                (<?= esc($loc['address']) ?>)
+                            <?php endif; ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </select>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                    data-bs-target="#addLocationModal">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
     </div>
-    <?php endif; ?>
 
     <div class="mb-3">
         <label for="weapon_id" class="form-label">Weapon</label>
@@ -124,6 +130,35 @@
     <a href="/sessions" class="btn btn-secondary">Cancel</a>
 
 <?= form_close() ?>
+
+<!-- Add Location Modal -->
+<div class="modal fade" id="addLocationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" id="modal_location_name"
+                           placeholder="e.g. Shooting Range De Bilt">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" id="modal_location_address"
+                           placeholder="e.g. Sportlaan 12, 3730 AB De Bilt">
+                </div>
+                <div id="modal_location_errors" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveLocationBtn">Save Location</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Add Weapon Modal -->
 <div class="modal fade" id="addWeaponModal" tabindex="-1">
@@ -247,6 +282,36 @@ document.querySelectorAll('[name="distance_preset"]').forEach(function(radio) {
         if (customBtn) customBtn.checked = true;
     }
 })();
+
+// Inline location creation via AJAX
+document.getElementById('saveLocationBtn').addEventListener('click', function() {
+    var data = new FormData();
+    data.append('name', document.getElementById('modal_location_name').value);
+    data.append('address', document.getElementById('modal_location_address').value);
+    data.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+    fetch('/sessions/ajax-create-location', {
+        method: 'POST',
+        body: data,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+        if (result.success) {
+            var select = document.getElementById('location_id');
+            var option = new Option(result.location.name, result.location.id, true, true);
+            select.add(option);
+            bootstrap.Modal.getInstance(document.getElementById('addLocationModal')).hide();
+            document.getElementById('modal_location_name').value = '';
+            document.getElementById('modal_location_address').value = '';
+            document.getElementById('modal_location_errors').classList.add('d-none');
+        } else {
+            var errDiv = document.getElementById('modal_location_errors');
+            errDiv.textContent = Object.values(result.errors).join(', ');
+            errDiv.classList.remove('d-none');
+        }
+    });
+});
 
 // Inline weapon creation via AJAX
 document.getElementById('saveWeaponBtn').addEventListener('click', function() {
