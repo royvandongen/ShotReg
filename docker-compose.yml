@@ -6,8 +6,8 @@ services:
     ports:
       - "8080:80"
     environment:
-      CI_ENVIRONMENT: production
-      app_baseURL: "http://localhost:8080/"
+      CI_ENVIRONMENT: ${CI_ENVIRONMENT:-production}
+      app_baseURL: ${APP_BASE_URL:-http://localhost:8080/}
       database_default_hostname: mysql
       database_default_database: shotregister
       database_default_username: shotregister

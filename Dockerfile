@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     unzip \
-    default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure and install PHP extensions
