@@ -3,6 +3,11 @@
 
 echo "Starting ShotReg..."
 
+# Map friendly env var names to CI4 format
+if [ -n "$APP_BASE_URL" ] && [ -z "$app_baseURL" ]; then
+    export app_baseURL="$APP_BASE_URL"
+fi
+
 # Skip migrations if SKIP_MIGRATIONS is set
 if [ "$SKIP_MIGRATIONS" = "true" ]; then
     echo "Skipping migrations (SKIP_MIGRATIONS=true)"
