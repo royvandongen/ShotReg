@@ -47,9 +47,15 @@ fi
 # Check migration status and run if needed
 echo "Checking migration status..."
 MIGRATION_STATUS_OUTPUT=$(php spark migrate:status 2>&1)
+MIGRATION_STATUS_EXIT=$?
 
-if echo "$MIGRATION_STATUS_OUTPUT" | grep -q "Pending"; then
-    echo "Found pending migrations, running..."
+if [ $MIGRATION_STATUS_EXIT -ne 0 ] || echo "$MIGRATION_STATUS_OUTPUT" | grep -q "Pending"; then
+    if [ $MIGRATION_STATUS_EXIT -ne 0 ]; then
+        echo "First boot detected (no migrations table yet), running all migrations..."
+    else
+        echo "Found pending migrations, running..."
+    fi
+
     MIGRATION_OUTPUT=$(php spark migrate --all 2>&1)
     MIGRATION_EXIT=$?
 
