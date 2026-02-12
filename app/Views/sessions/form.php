@@ -228,6 +228,13 @@ function getCsrfToken() {
     return { name: name, value: match ? decodeURIComponent(match[1]) : '<?= csrf_hash() ?>' };
 }
 
+// Update the main form's hidden CSRF field after any AJAX call regenerates the token
+function refreshFormCsrf() {
+    var csrf = getCsrfToken();
+    var hidden = document.querySelector('form input[name="' + csrf.name + '"]');
+    if (hidden) hidden.value = csrf.value;
+}
+
 // Drag-and-drop photo reordering
 (function() {
     var container = document.getElementById('photoSortable');
@@ -257,7 +264,7 @@ function getCsrfToken() {
                 method: 'POST',
                 body: data,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
+            }).then(function() { refreshFormCsrf(); });
         }
     });
 })();
@@ -320,6 +327,7 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
             errDiv.textContent = Object.values(result.errors).join(', ');
             errDiv.classList.remove('d-none');
         }
+        refreshFormCsrf();
     });
 });
 
@@ -356,6 +364,7 @@ document.getElementById('saveWeaponBtn').addEventListener('click', function() {
             errDiv.textContent = Object.values(result.errors).join(', ');
             errDiv.classList.remove('d-none');
         }
+        refreshFormCsrf();
     });
 });
 </script>
