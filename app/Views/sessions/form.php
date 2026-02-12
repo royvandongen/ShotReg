@@ -220,6 +220,14 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 <script>
+// Read current CSRF token from cookie (survives token regeneration)
+function getCsrfToken() {
+    var name = '<?= csrf_token() ?>';
+    var cookieName = 'csrf_cookie_name';
+    var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + cookieName + '=([^;]+)'));
+    return { name: name, value: match ? decodeURIComponent(match[1]) : '<?= csrf_hash() ?>' };
+}
+
 // Drag-and-drop photo reordering
 (function() {
     var container = document.getElementById('photoSortable');
@@ -238,11 +246,12 @@
                 if (badge) badge.textContent = index + 1;
             });
 
+            var csrf = getCsrfToken();
             var data = new FormData();
             photoIds.forEach(function(id) {
                 data.append('photo_ids[]', id);
             });
-            data.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+            data.append(csrf.name, csrf.value);
 
             fetch('/sessions/reorder-photos', {
                 method: 'POST',
@@ -285,10 +294,11 @@ document.querySelectorAll('[name="distance_preset"]').forEach(function(radio) {
 
 // Inline location creation via AJAX
 document.getElementById('saveLocationBtn').addEventListener('click', function() {
+    var csrf = getCsrfToken();
     var data = new FormData();
     data.append('name', document.getElementById('modal_location_name').value);
     data.append('address', document.getElementById('modal_location_address').value);
-    data.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+    data.append(csrf.name, csrf.value);
 
     fetch('/sessions/ajax-create-location', {
         method: 'POST',
@@ -315,13 +325,14 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
 
 // Inline weapon creation via AJAX
 document.getElementById('saveWeaponBtn').addEventListener('click', function() {
+    var csrf = getCsrfToken();
     var data = new FormData();
     data.append('name', document.getElementById('modal_weapon_name').value);
     data.append('type', document.getElementById('modal_weapon_type').value);
     data.append('caliber', document.getElementById('modal_weapon_caliber').value);
     data.append('sighting', document.getElementById('modal_weapon_sighting').value);
     data.append('ownership', document.getElementById('modal_weapon_ownership').value);
-    data.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+    data.append(csrf.name, csrf.value);
 
     fetch('/weapons/ajax-create', {
         method: 'POST',
