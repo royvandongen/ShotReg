@@ -28,7 +28,7 @@ class AuthController extends BaseController
             $throttleKey = 'login_' . $this->sanitizeIpForCache($this->request->getIPAddress());
             if (! $throttler->check($throttleKey, 5, MINUTE)) {
                 return view('auth/login', [
-                    'errors' => ['login' => 'Too many login attempts. Please wait a minute.'],
+                    'errors' => ['login' => lang('Auth.tooManyAttempts')],
                 ]);
             }
 
@@ -51,7 +51,7 @@ class AuthController extends BaseController
                     'username' => $this->request->getPost('username'),
                     'ip'       => $this->request->getIPAddress(),
                 ]);
-                return view('auth/login', ['errors' => ['login' => 'Invalid credentials.']]);
+                return view('auth/login', ['errors' => ['login' => lang('Auth.invalidCredentials')]]);
             }
 
             if ($user['totp_enabled']) {
@@ -65,7 +65,7 @@ class AuthController extends BaseController
             if ($settingModel->getValue('force_2fa', '0') === '1') {
                 session()->set('redirecting_to_setup2fa', true);
                 return redirect()->to('/auth/setup2fa')
-                                 ->with('error', 'Two-factor authentication is required. Please set it up to continue.');
+                                 ->with('error', lang('Auth.2faRequired'));
             }
             
             return redirect()->to('/dashboard');
@@ -88,7 +88,7 @@ class AuthController extends BaseController
             $throttleKey = '2fa_' . $this->sanitizeIpForCache($this->request->getIPAddress());
             if (! $throttler->check($throttleKey, 5, MINUTE)) {
                 return view('auth/verify2fa', [
-                    'error' => 'Too many attempts. Please wait a minute.',
+                    'error' => lang('Auth.tooMany2faAttempts'),
                 ]);
             }
 
@@ -109,7 +109,7 @@ class AuthController extends BaseController
                 return redirect()->to('/dashboard');
             }
 
-            return view('auth/verify2fa', ['error' => 'Invalid or expired code.']);
+            return view('auth/verify2fa', ['error' => lang('Auth.invalidOrExpiredCode')]);
         }
 
         return view('auth/verify2fa');
@@ -119,7 +119,7 @@ class AuthController extends BaseController
     {
         if (! Auth::isRegistrationEnabled()) {
             return redirect()->to('/auth/login')
-                             ->with('error', 'Registration is currently disabled.');
+                             ->with('error', lang('Auth.registrationDisabled'));
         }
 
         if ($this->request->getMethod() === 'POST') {
@@ -128,7 +128,7 @@ class AuthController extends BaseController
             $throttleKey = 'register_' . $this->sanitizeIpForCache($this->request->getIPAddress());
             if (! $throttler->check($throttleKey, 3, HOUR)) {
                 return view('auth/register', [
-                    'errors' => ['register' => 'Too many registration attempts. Please try again later.'],
+                    'errors' => ['register' => lang('Auth.tooManyRegistrations')],
                 ]);
             }
 
@@ -150,7 +150,7 @@ class AuthController extends BaseController
             ]);
 
             return redirect()->to('/auth/login')
-                             ->with('success', 'Account created. Please log in.');
+                             ->with('success', lang('Auth.accountCreated'));
         }
 
         return view('auth/register');
@@ -161,7 +161,7 @@ class AuthController extends BaseController
         $userId = session()->get('user_id');
         if (! $userId) {
             return redirect()->to('/auth/login')
-                             ->with('error', 'Please log in first.');
+                             ->with('error', lang('Auth.pleaseLoginFirst'));
         }
 
         $userModel = new UserModel();
@@ -169,7 +169,7 @@ class AuthController extends BaseController
         
         if (! $user) {
             return redirect()->to('/auth/login')
-                             ->with('error', 'User not found.');
+                             ->with('error', lang('Auth.userNotFound'));
         }
 
         if ($this->request->getMethod() === 'POST') {
@@ -187,7 +187,7 @@ class AuthController extends BaseController
                 return view('auth/setup2fa', [
                     'qrSvg'  => $qrSvg,
                     'secret' => $secret,
-                    'error'  => 'Please enter a valid 6-digit code.',
+                    'error'  => lang('Auth.enterValid6Digit'),
                 ]);
             }
 
@@ -199,7 +199,7 @@ class AuthController extends BaseController
                 return view('auth/setup2fa', [
                     'qrSvg'  => $qrSvg,
                     'secret' => $secret,
-                    'error'  => 'Session expired. Please scan the QR code again and enter the new code.',
+                    'error'  => lang('Auth.sessionExpiredRescan'),
                 ]);
             }
 
@@ -213,7 +213,7 @@ class AuthController extends BaseController
                 session()->remove('pending_totp_secret');
                 session()->set('totp_enabled', true);
                 return redirect()->to('/dashboard')
-                                 ->with('success', '2FA enabled successfully.');
+                                 ->with('success', lang('Auth.2faEnabled'));
             }
 
             // Invalid code - keep same secret and QR code
@@ -221,7 +221,7 @@ class AuthController extends BaseController
             return view('auth/setup2fa', [
                 'qrSvg'  => $qrSvg,
                 'secret' => $secret,
-                'error'  => 'Invalid code. Please try again.',
+                'error'  => lang('Auth.invalidCode'),
             ]);
         }
 

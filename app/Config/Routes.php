@@ -15,6 +15,7 @@ $routes->post('auth/register', 'AuthController::register');
 $routes->get('auth/verify2fa', 'AuthController::verify2fa');
 $routes->post('auth/verify2fa', 'AuthController::verify2fa');
 $routes->get('auth/logout', 'AuthController::logout');
+$routes->post('locale/switch', 'LocaleController::switch');
 
 // Protected routes
 $routes->group('', ['filter' => 'auth'], static function ($routes) {

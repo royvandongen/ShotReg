@@ -1,11 +1,11 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('title') ?>
-<?= ($action === 'create') ? 'New Session' : 'Edit Session' ?>
+<?= ($action === 'create') ? lang('Sessions.createTitle') : lang('Sessions.editTitle') ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3><?= ($action === 'create') ? 'Record New Session' : 'Edit Session' ?></h3>
+<h3><?= ($action === 'create') ? lang('Sessions.createTitle') : lang('Sessions.editTitle') ?></h3>
 
 <?php if (! empty($errors)): ?>
     <div class="alert alert-danger">
@@ -20,16 +20,16 @@
 ) ?>
 
     <div class="mb-3">
-        <label for="session_date" class="form-label">Date</label>
+        <label for="session_date" class="form-label"><?= lang('Sessions.date') ?></label>
         <input type="date" class="form-control" id="session_date" name="session_date"
                value="<?= esc($session['session_date'] ?? date('Y-m-d')) ?>" required>
     </div>
 
     <div class="mb-3">
-        <label for="location_id" class="form-label">Location</label>
+        <label for="location_id" class="form-label"><?= lang('Sessions.location') ?></label>
         <div class="input-group">
             <select class="form-select" id="location_id" name="location_id">
-                <option value="">-- No location --</option>
+                <option value=""><?= lang('Sessions.noLocation') ?></option>
                 <?php if (! empty($locations)): ?>
                     <?php foreach ($locations as $loc): ?>
                         <option value="<?= $loc['id'] ?>"
@@ -50,10 +50,10 @@
     </div>
 
     <div class="mb-3">
-        <label for="weapon_id" class="form-label">Weapon</label>
+        <label for="weapon_id" class="form-label"><?= lang('Sessions.weapon') ?></label>
         <div class="input-group">
             <select class="form-select" id="weapon_id" name="weapon_id" required>
-                <option value="">Select a weapon...</option>
+                <option value=""><?= lang('Sessions.selectWeapon') ?></option>
                 <?php foreach ($weapons as $w): ?>
                     <option value="<?= $w['id'] ?>"
                         <?= (($session['weapon_id'] ?? '') == $w['id']) ? 'selected' : '' ?>>
@@ -69,7 +69,7 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Distance / Lane</label>
+        <label class="form-label"><?= lang('Sessions.distanceLane') ?></label>
         <?php if (! empty($laneTypes)): ?>
         <div class="btn-group w-100 mb-2" role="group">
             <?php foreach ($laneTypes as $i => $lt): ?>
@@ -78,24 +78,24 @@
                 <label class="btn btn-outline-primary" for="d_<?= $i ?>"><?= esc($lt['label']) ?></label>
             <?php endforeach; ?>
             <input type="radio" class="btn-check" name="distance_preset" id="dcustom" value="custom">
-            <label class="btn btn-outline-primary" for="dcustom">Custom</label>
+            <label class="btn btn-outline-primary" for="dcustom"><?= lang('Sessions.custom') ?></label>
         </div>
         <?php endif; ?>
         <input type="text" class="form-control" id="distance" name="distance"
                value="<?= esc($session['distance'] ?? '') ?>"
-               placeholder="e.g. 25m" required>
+               placeholder="<?= lang('Sessions.distancePlaceholder') ?>" required>
     </div>
 
     <div class="mb-3">
-        <label for="photos" class="form-label">Shooting Card Photos</label>
+        <label for="photos" class="form-label"><?= lang('Sessions.photos') ?></label>
         <input type="file" class="form-control" id="photos" name="photos[]"
                multiple accept="image/*" capture="environment">
-        <div class="form-text">Upload photos of your shooting cards. You can select multiple.</div>
+        <div class="form-text"><?= lang('Sessions.photosHelp') ?></div>
     </div>
 
     <?php if (! empty($photos)): ?>
     <div class="mb-3">
-        <label class="form-label">Existing Photos <small class="text-muted">(drag to reorder)</small></label>
+        <label class="form-label"><?= lang('Sessions.existingPhotos') ?> <small class="text-muted">(<?= lang('Sessions.dragToReorder') ?>)</small></label>
         <div class="row g-2" id="photoSortable">
             <?php foreach ($photos as $photo): ?>
                 <div class="col-4 col-md-3 text-center sortable-item" data-photo-id="<?= $photo['id'] ?>">
@@ -108,7 +108,7 @@
                     <form method="post" action="/sessions/delete-photo/<?= $photo['id'] ?>">
                         <?= csrf_field() ?>
                         <button type="submit" class="btn btn-sm btn-outline-danger"
-                                onclick="return confirm('Remove this photo?')">
+                                onclick="return confirm('<?= lang('Sessions.removePhoto') ?>')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
@@ -119,15 +119,15 @@
     <?php endif; ?>
 
     <div class="mb-3">
-        <label for="notes" class="form-label">Notes</label>
+        <label for="notes" class="form-label"><?= lang('App.notes') ?></label>
         <textarea class="form-control" id="notes" name="notes"
                   rows="3"><?= esc($session['notes'] ?? '') ?></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">
-        <i class="bi bi-check-lg"></i> Save Session
+        <i class="bi bi-check-lg"></i> <?= lang('Sessions.saveSession') ?>
     </button>
-    <a href="/sessions" class="btn btn-secondary">Cancel</a>
+    <a href="/sessions" class="btn btn-secondary"><?= lang('App.cancel') ?></a>
 
 <?= form_close() ?>
 
@@ -136,25 +136,25 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add Location</h5>
+                <h5 class="modal-title"><?= lang('Sessions.addLocation') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Name</label>
+                    <label class="form-label"><?= lang('Sessions.locationName') ?></label>
                     <input type="text" class="form-control" id="modal_location_name"
-                           placeholder="e.g. Shooting Range De Bilt">
+                           placeholder="<?= lang('Sessions.locationNamePlaceholder') ?>">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Address</label>
+                    <label class="form-label"><?= lang('Sessions.locationAddress') ?></label>
                     <input type="text" class="form-control" id="modal_location_address"
-                           placeholder="e.g. Sportlaan 12, 3730 AB De Bilt">
+                           placeholder="<?= lang('Sessions.locationAddressPlaceholder') ?>">
                 </div>
                 <div id="modal_location_errors" class="alert alert-danger d-none"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveLocationBtn">Save Location</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('App.cancel') ?></button>
+                <button type="button" class="btn btn-primary" id="saveLocationBtn"><?= lang('Sessions.saveLocation') ?></button>
             </div>
         </div>
     </div>
@@ -165,33 +165,33 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Weapon</h5>
+                <h5 class="modal-title"><?= lang('Sessions.addWeapon') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Name/Model</label>
+                    <label class="form-label"><?= lang('Sessions.weaponNameModel') ?></label>
                     <input type="text" class="form-control" id="modal_weapon_name">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Type</label>
+                    <label class="form-label"><?= lang('Sessions.weaponType') ?></label>
                     <select class="form-select" id="modal_weapon_type">
-                        <option value="pistol">Pistol</option>
-                        <option value="rifle">Rifle</option>
-                        <option value="shotgun">Shotgun</option>
-                        <option value="revolver">Revolver</option>
-                        <option value="other">Other</option>
+                        <option value="pistol"><?= lang('App.pistol') ?></option>
+                        <option value="rifle"><?= lang('App.rifle') ?></option>
+                        <option value="shotgun"><?= lang('App.shotgun') ?></option>
+                        <option value="revolver"><?= lang('App.revolver') ?></option>
+                        <option value="other"><?= lang('App.other') ?></option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Caliber</label>
+                    <label class="form-label"><?= lang('Sessions.weaponCaliber') ?></label>
                     <input type="text" class="form-control" id="modal_weapon_caliber"
                            placeholder="e.g. 9mm, .22 LR">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Sighting</label>
+                    <label class="form-label"><?= lang('Sessions.weaponSighting') ?></label>
                     <select class="form-select" id="modal_weapon_sighting">
-                        <option value="">-- None --</option>
+                        <option value=""><?= lang('App.none') ?></option>
                         <?php if (! empty($sightings)): ?>
                             <?php foreach ($sightings as $s): ?>
                                 <option value="<?= esc($s['value']) ?>"><?= esc($s['label']) ?></option>
@@ -200,17 +200,17 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Ownership</label>
+                    <label class="form-label"><?= lang('Sessions.weaponOwnership') ?></label>
                     <select class="form-select" id="modal_weapon_ownership">
-                        <option value="personal">Personal</option>
-                        <option value="association">Association</option>
+                        <option value="personal"><?= lang('App.personal') ?></option>
+                        <option value="association"><?= lang('App.association') ?></option>
                     </select>
                 </div>
                 <div id="modal_weapon_errors" class="alert alert-danger d-none"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveWeaponBtn">Save Weapon</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('App.cancel') ?></button>
+                <button type="button" class="btn btn-primary" id="saveWeaponBtn"><?= lang('Sessions.saveWeapon') ?></button>
             </div>
         </div>
     </div>

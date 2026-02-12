@@ -35,6 +35,11 @@ class Auth
             $data['is_admin'] = 1;
         }
 
+        // Save locale from current session
+        if (! isset($data['locale'])) {
+            $data['locale'] = session()->get('locale') ?? 'en';
+        }
+
         $userId = $this->userModel->insert($data);
 
         if ($userId) {
@@ -121,6 +126,7 @@ class Auth
             'username'     => $user['username'],
             'is_admin'     => (bool) ($user['is_admin'] ?? false),
             'totp_enabled' => (bool) ($user['totp_enabled'] ?? false),
+            'locale'       => $user['locale'] ?? 'en',
             'logged_in'    => true,
         ]);
     }

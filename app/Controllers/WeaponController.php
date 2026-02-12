@@ -46,7 +46,7 @@ class WeaponController extends BaseController
 
             $this->weaponModel->insert($data);
             return redirect()->to('/weapons')
-                             ->with('success', 'Weapon added to catalog.');
+                             ->with('success', lang('Weapons.added'));
         }
 
         return view('weapons/form', [
@@ -83,7 +83,7 @@ class WeaponController extends BaseController
 
             $this->weaponModel->update($id, $data);
             return redirect()->to('/weapons')
-                             ->with('success', 'Weapon updated.');
+                             ->with('success', lang('Weapons.updated'));
         }
 
         return view('weapons/form', [
@@ -100,7 +100,7 @@ class WeaponController extends BaseController
         if ($weapon && $weapon['user_id'] === session()->get('user_id')) {
             $this->weaponModel->delete($id);
         }
-        return redirect()->to('/weapons')->with('success', 'Weapon removed.');
+        return redirect()->to('/weapons')->with('success', lang('Weapons.removed'));
     }
 
     public function ajaxCreate()

@@ -53,7 +53,7 @@ class ProfileController extends BaseController
         session()->set('username', $data['username']);
 
         return redirect()->to('/profile')
-                         ->with('success', 'Profile updated.');
+                         ->with('success', lang('Profile.updated'));
     }
 
     public function changePassword()
@@ -77,7 +77,7 @@ class ProfileController extends BaseController
         if (! password_verify($this->request->getPost('current_password'), $user['password_hash'])) {
             return view('profile/index', [
                 'user'   => $user,
-                'errors' => ['current_password' => 'Current password is incorrect.'],
+                'errors' => ['current_password' => lang('Profile.wrongPassword')],
             ]);
         }
 
@@ -86,6 +86,6 @@ class ProfileController extends BaseController
         ]);
 
         return redirect()->to('/profile')
-                         ->with('success', 'Password changed.');
+                         ->with('success', lang('Profile.passwordChanged'));
     }
 }

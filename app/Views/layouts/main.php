@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= service('request')->getLocale() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,17 +26,17 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard">
-                            <i class="bi bi-house"></i> Dashboard
+                            <i class="bi bi-house"></i> <?= lang('App.dashboard') ?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/sessions">
-                            <i class="bi bi-journal-text"></i> Sessions
+                            <i class="bi bi-journal-text"></i> <?= lang('App.sessions') ?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/weapons">
-                            <i class="bi bi-bullseye"></i> Weapons
+                            <i class="bi bi-bullseye"></i> <?= lang('App.weapons') ?>
                         </a>
                     </li>
                 </ul>
@@ -44,18 +44,44 @@
                     <?php if (session()->get('is_admin')): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-shield-gear"></i> Admin
+                            <i class="bi bi-shield-gear"></i> <?= lang('App.admin') ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/admin/users">
-                                <i class="bi bi-people"></i> Users
+                                <i class="bi bi-people"></i> <?= lang('App.users') ?>
                             </a></li>
                             <li><a class="dropdown-item" href="/admin/settings">
-                                <i class="bi bi-sliders"></i> System Settings
+                                <i class="bi bi-sliders"></i> <?= lang('App.systemSettings') ?>
                             </a></li>
                         </ul>
                     </li>
                     <?php endif; ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-translate"></i>
+                            <?= service('request')->getLocale() === 'nl' ? 'NL' : 'EN' ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form method="post" action="/locale/switch">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="locale" value="en">
+                                    <button type="submit" class="dropdown-item <?= service('request')->getLocale() === 'en' ? 'active' : '' ?>">
+                                        <?= lang('App.english') ?>
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="/locale/switch">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="locale" value="nl">
+                                    <button type="submit" class="dropdown-item <?= service('request')->getLocale() === 'nl' ? 'active' : '' ?>">
+                                        <?= lang('App.dutch') ?>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i>
@@ -63,17 +89,17 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/profile">
-                                <i class="bi bi-person"></i> Profile
+                                <i class="bi bi-person"></i> <?= lang('App.profile') ?>
                             </a></li>
                             <li><a class="dropdown-item" href="/settings">
-                                <i class="bi bi-gear"></i> Settings
+                                <i class="bi bi-gear"></i> <?= lang('App.settings') ?>
                             </a></li>
                             <li><a class="dropdown-item" href="/auth/setup2fa">
-                                <i class="bi bi-shield-lock"></i> 2FA Settings
+                                <i class="bi bi-shield-lock"></i> <?= lang('App.twoFaSettings') ?>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/auth/logout">
-                                <i class="bi bi-box-arrow-right"></i> Logout
+                                <i class="bi bi-box-arrow-right"></i> <?= lang('App.logout') ?>
                             </a></li>
                         </ul>
                     </li>

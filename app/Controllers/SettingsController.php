@@ -64,7 +64,7 @@ class SettingsController extends BaseController
         }
 
         $this->locationModel->insert($data);
-        return redirect()->to('/settings')->with('success', 'Location added.');
+        return redirect()->to('/settings')->with('success', lang('Settings.locationAdded'));
     }
 
     public function editLocation(int $id)
@@ -92,7 +92,7 @@ class SettingsController extends BaseController
         }
 
         $this->locationModel->update($id, $data);
-        return redirect()->to('/settings')->with('success', 'Location updated.');
+        return redirect()->to('/settings')->with('success', lang('Settings.locationUpdated'));
     }
 
     public function deleteLocation(int $id)
@@ -101,7 +101,7 @@ class SettingsController extends BaseController
         if ($location && $location['user_id'] === session()->get('user_id')) {
             $this->locationModel->delete($id);
         }
-        return redirect()->to('/settings')->with('success', 'Location removed.');
+        return redirect()->to('/settings')->with('success', lang('Settings.locationRemoved'));
     }
 
     // --- Options (lane types & sighting) ---
@@ -114,7 +114,7 @@ class SettingsController extends BaseController
 
         $type = $data['type'] ?? '';
         if (! in_array($type, ['lane_type', 'sighting'])) {
-            return redirect()->back()->with('error', 'Invalid option type.');
+            return redirect()->back()->with('error', lang('Settings.invalidOptionType'));
         }
 
         // Auto-set sort_order
@@ -130,8 +130,8 @@ class SettingsController extends BaseController
         }
 
         $this->optionModel->insert($data);
-        $label = $type === 'lane_type' ? 'Lane type' : 'Sighting option';
-        return redirect()->to('/settings')->with('success', "$label added.");
+        $msg = $type === 'lane_type' ? lang('Settings.laneTypeAdded') : lang('Settings.sightingAdded');
+        return redirect()->to('/settings')->with('success', $msg);
     }
 
     public function deleteOption(int $id)
@@ -140,7 +140,7 @@ class SettingsController extends BaseController
         if ($option && $option['user_id'] === session()->get('user_id')) {
             $this->optionModel->delete($id);
         }
-        return redirect()->to('/settings')->with('success', 'Option removed.');
+        return redirect()->to('/settings')->with('success', lang('Settings.optionRemoved'));
     }
 
     // --- Default settings ---
@@ -154,6 +154,6 @@ class SettingsController extends BaseController
             $this->settingModel->setValue($userId, 'default_ownership', $ownership);
         }
 
-        return redirect()->to('/settings')->with('success', 'Defaults saved.');
+        return redirect()->to('/settings')->with('success', lang('Settings.defaultsSaved'));
     }
 }

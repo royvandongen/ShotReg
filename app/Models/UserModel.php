@@ -21,6 +21,7 @@ class UserModel extends Model
         'first_name',
         'last_name',
         'knsa_member_id',
+        'locale',
         'password_hash',
         'is_admin',
         'totp_secret',

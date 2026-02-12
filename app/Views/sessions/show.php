@@ -1,16 +1,16 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('title') ?>Session <?= esc($session['session_date']) ?><?= $this->endSection() ?>
+<?= $this->section('title') ?><?= lang('Sessions.sessionDate') ?> <?= esc($session['session_date']) ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Session: <?= esc($session['session_date']) ?></h3>
+    <h3><?= lang('Sessions.sessionDate') ?>: <?= esc($session['session_date']) ?></h3>
     <div>
         <a href="/sessions/edit/<?= $session['id'] ?>" class="btn btn-outline-primary">
-            <i class="bi bi-pencil"></i> Edit
+            <i class="bi bi-pencil"></i> <?= lang('App.edit') ?>
         </a>
         <a href="/sessions" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back
+            <i class="bi bi-arrow-left"></i> <?= lang('App.back') ?>
         </a>
     </div>
 </div>
@@ -19,12 +19,12 @@
     <div class="card-body">
         <div class="row">
             <div class="col-sm-6 col-md-3 mb-2">
-                <strong>Date</strong><br>
+                <strong><?= lang('App.date') ?></strong><br>
                 <?= esc($session['session_date']) ?>
             </div>
             <?php if (! empty($session['location_name'])): ?>
             <div class="col-sm-6 col-md-3 mb-2">
-                <strong>Location</strong><br>
+                <strong><?= lang('Sessions.location') ?></strong><br>
                 <?= esc($session['location_name']) ?>
                 <?php if (! empty($session['location_address'])): ?>
                     <br><small class="text-muted"><?= esc($session['location_address']) ?></small>
@@ -32,29 +32,29 @@
             </div>
             <?php endif; ?>
             <div class="col-sm-6 col-md-3 mb-2">
-                <strong>Weapon</strong><br>
+                <strong><?= lang('Sessions.weapon') ?></strong><br>
                 <?= esc($session['weapon_name']) ?>
                 <small class="text-muted">(<?= esc($session['weapon_type']) ?>)</small>
             </div>
             <div class="col-sm-6 col-md-3 mb-2">
-                <strong>Caliber</strong><br>
+                <strong><?= lang('Sessions.caliber') ?></strong><br>
                 <?= esc($session['caliber']) ?>
             </div>
             <div class="col-sm-6 col-md-3 mb-2">
-                <strong>Distance</strong><br>
+                <strong><?= lang('Sessions.distance') ?></strong><br>
                 <?= esc($session['distance']) ?>
             </div>
         </div>
         <?php if (! empty($session['notes'])): ?>
             <hr>
-            <strong>Notes</strong><br>
+            <strong><?= lang('App.notes') ?></strong><br>
             <?= nl2br(esc($session['notes'])) ?>
         <?php endif; ?>
     </div>
 </div>
 
 <?php if (! empty($photos)): ?>
-<h5>Shooting Cards (<?= count($photos) ?>)</h5>
+<h5><?= lang('Sessions.shootingCards') ?> (<?= count($photos) ?>)</h5>
 <div class="row g-3 photo-grid">
     <?php foreach ($photos as $index => $photo): ?>
         <div class="col-6 col-md-4 col-lg-3">
@@ -72,8 +72,8 @@
 </div>
 <?php else: ?>
 <div class="alert alert-light">
-    No photos uploaded for this session.
-    <a href="/sessions/edit/<?= $session['id'] ?>">Add photos</a>.
+    <?= lang('Sessions.noPhotos') ?>
+    <a href="/sessions/edit/<?= $session['id'] ?>"><?= lang('Sessions.addPhotos') ?></a>.
 </div>
 <?php endif; ?>
 <?= $this->endSection() ?>

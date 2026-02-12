@@ -37,7 +37,7 @@ class AdminController extends BaseController
         $this->settingModel->setValue('force_2fa', $force2fa);
 
         return redirect()->to('/admin/settings')
-                         ->with('success', 'Settings saved.');
+                         ->with('success', lang('Admin.settingsSaved'));
     }
 
     public function addDefault()
@@ -46,7 +46,7 @@ class AdminController extends BaseController
         $label = trim($this->request->getPost('label'));
 
         if (! in_array($type, ['lane_type', 'sighting'], true) || $label === '') {
-            return redirect()->to('/admin/settings')->with('error', 'Invalid input.');
+            return redirect()->to('/admin/settings')->with('error', lang('Admin.invalidInput'));
         }
 
         $settingKey = $type === 'lane_type' ? 'default_lane_types' : 'default_sightings';
@@ -55,7 +55,7 @@ class AdminController extends BaseController
         $existing[] = ['label' => $label, 'value' => strtolower($label)];
         $this->settingModel->setValue($settingKey, json_encode($existing));
 
-        return redirect()->to('/admin/settings')->with('success', 'Default added.');
+        return redirect()->to('/admin/settings')->with('success', lang('Admin.defaultAdded'));
     }
 
     public function deleteDefault()
@@ -64,7 +64,7 @@ class AdminController extends BaseController
         $index = (int) $this->request->getPost('index');
 
         if (! in_array($type, ['lane_type', 'sighting'], true)) {
-            return redirect()->to('/admin/settings')->with('error', 'Invalid type.');
+            return redirect()->to('/admin/settings')->with('error', lang('Admin.invalidType'));
         }
 
         $settingKey = $type === 'lane_type' ? 'default_lane_types' : 'default_sightings';
@@ -75,7 +75,7 @@ class AdminController extends BaseController
             $this->settingModel->setValue($settingKey, json_encode($existing));
         }
 
-        return redirect()->to('/admin/settings')->with('success', 'Default removed.');
+        return redirect()->to('/admin/settings')->with('success', lang('Admin.defaultRemoved'));
     }
 
     public function users()
@@ -113,21 +113,23 @@ class AdminController extends BaseController
 
         if (! $user) {
             return redirect()->to('/admin/users')
-                             ->with('error', 'User not found.');
+                             ->with('error', lang('Admin.userNotFound'));
         }
 
         // Prevent demoting yourself
         if ($userId === (int) session()->get('user_id')) {
             return redirect()->to('/admin/users')
-                             ->with('error', 'You cannot change your own admin status.');
+                             ->with('error', lang('Admin.cannotChangeOwnRole'));
         }
 
         $newStatus = $user['is_admin'] ? 0 : 1;
         $userModel->update($userId, ['is_admin' => $newStatus]);
 
-        $action = $newStatus ? 'promoted to admin' : 'demoted from admin';
+        $msg = $newStatus
+            ? lang('Admin.userPromoted', [esc($user['username'])])
+            : lang('Admin.userDemoted', [esc($user['username'])]);
 
         return redirect()->to('/admin/users')
-                         ->with('success', esc($user['username']) . " has been {$action}.");
+                         ->with('success', $msg);
     }
 }

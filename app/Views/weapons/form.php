@@ -1,11 +1,11 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('title') ?>
-<?= ($action === 'create') ? 'Add Weapon' : 'Edit Weapon' ?>
+<?= ($action === 'create') ? lang('Weapons.createTitle') : lang('Weapons.editTitle') ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3><?= ($action === 'create') ? 'Add Weapon' : 'Edit Weapon' ?></h3>
+<h3><?= ($action === 'create') ? lang('Weapons.createTitle') : lang('Weapons.editTitle') ?></h3>
 
 <?php if (! empty($errors)): ?>
     <div class="alert alert-danger">
@@ -18,35 +18,35 @@
 <?= form_open(($action === 'create') ? 'weapons/create' : 'weapons/edit/' . $id) ?>
 
     <div class="mb-3">
-        <label for="name" class="form-label">Name / Model</label>
+        <label for="name" class="form-label"><?= lang('Weapons.nameModel') ?></label>
         <input type="text" class="form-control" id="name" name="name"
                value="<?= esc($weapon['name'] ?? '') ?>" required>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="type" class="form-label">Type</label>
+            <label for="type" class="form-label"><?= lang('App.type') ?></label>
             <select class="form-select" id="type" name="type" required>
                 <?php foreach (['pistol', 'rifle', 'shotgun', 'revolver', 'other'] as $t): ?>
                     <option value="<?= $t ?>" <?= (($weapon['type'] ?? '') === $t) ? 'selected' : '' ?>>
-                        <?= ucfirst($t) ?>
+                        <?= lang('App.' . $t) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="caliber" class="form-label">Caliber / Ammo</label>
+            <label for="caliber" class="form-label"><?= lang('Weapons.caliberAmmo') ?></label>
             <input type="text" class="form-control" id="caliber" name="caliber"
                    value="<?= esc($weapon['caliber'] ?? '') ?>" required
-                   placeholder="e.g. 9mm, .22 LR, .308 Win">
+                   placeholder="<?= lang('Weapons.caliberPlaceholder') ?>">
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="sighting" class="form-label">Sighting</label>
+            <label for="sighting" class="form-label"><?= lang('Weapons.sighting') ?></label>
             <select class="form-select" id="sighting" name="sighting">
-                <option value="">-- None --</option>
+                <option value=""><?= lang('App.none') ?></option>
                 <?php if (! empty($sightings)): ?>
                     <?php foreach ($sightings as $s): ?>
                         <option value="<?= esc($s['value']) ?>" <?= (($weapon['sighting'] ?? '') === $s['value']) ? 'selected' : '' ?>>
@@ -57,28 +57,28 @@
             </select>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="ownership" class="form-label">Ownership</label>
+            <label for="ownership" class="form-label"><?= lang('Weapons.ownership') ?></label>
             <select class="form-select" id="ownership" name="ownership" required>
                 <option value="personal" <?= (($weapon['ownership'] ?? '') === 'personal') ? 'selected' : '' ?>>
-                    Personal
+                    <?= lang('App.personal') ?>
                 </option>
                 <option value="association" <?= (($weapon['ownership'] ?? '') === 'association') ? 'selected' : '' ?>>
-                    Association
+                    <?= lang('App.association') ?>
                 </option>
             </select>
         </div>
     </div>
 
     <div class="mb-3">
-        <label for="notes" class="form-label">Notes</label>
+        <label for="notes" class="form-label"><?= lang('App.notes') ?></label>
         <textarea class="form-control" id="notes" name="notes"
                   rows="2"><?= esc($weapon['notes'] ?? '') ?></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">
-        <i class="bi bi-check-lg"></i> Save Weapon
+        <i class="bi bi-check-lg"></i> <?= lang('Weapons.saveWeapon') ?>
     </button>
-    <a href="/weapons" class="btn btn-secondary">Cancel</a>
+    <a href="/weapons" class="btn btn-secondary"><?= lang('App.cancel') ?></a>
 
 <?= form_close() ?>
 <?= $this->endSection() ?>

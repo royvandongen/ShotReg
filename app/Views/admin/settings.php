@@ -1,12 +1,12 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('title') ?>System Settings<?= $this->endSection() ?>
+<?= $this->section('title') ?><?= lang('Admin.systemSettings') ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3 class="mb-4">System Settings</h3>
+<h3 class="mb-4"><?= lang('Admin.systemSettings') ?></h3>
 
 <div class="card mb-4">
-    <div class="card-header"><strong>General</strong></div>
+    <div class="card-header"><strong><?= lang('Admin.general') ?></strong></div>
     <div class="card-body">
         <?= form_open('/admin/settings') ?>
             <div class="form-check form-switch mb-3">
@@ -14,11 +14,11 @@
                        name="registration_enabled" value="1"
                        <?= $registrationEnabled !== '0' ? 'checked' : '' ?>>
                 <label class="form-check-label" for="registration_enabled">
-                    Allow new user registrations
+                    <?= lang('Admin.allowRegistrations') ?>
                 </label>
             </div>
             <p class="text-muted small mb-4">
-                When disabled, only existing users can log in. New accounts can still be created via the CLI.
+                <?= lang('Admin.registrationHelp') ?>
             </p>
 
             <div class="form-check form-switch mb-3">
@@ -26,22 +26,22 @@
                        name="force_2fa" value="1"
                        <?= $force2fa === '1' ? 'checked' : '' ?>>
                 <label class="form-check-label" for="force_2fa">
-                    Require two-factor authentication for all users
+                    <?= lang('Admin.require2fa') ?>
                 </label>
             </div>
             <p class="text-muted small mb-4">
-                When enabled, users without 2FA will be redirected to set it up before they can access the application.
+                <?= lang('Admin.require2faHelp') ?>
             </p>
 
-            <button type="submit" class="btn btn-primary">Save Settings</button>
+            <button type="submit" class="btn btn-primary"><?= lang('Admin.saveSettings') ?></button>
         <?= form_close() ?>
     </div>
 </div>
 
 <div class="card mb-4">
-    <div class="card-header"><strong>Default Lane Types for New Users</strong></div>
+    <div class="card-header"><strong><?= lang('Admin.defaultLaneTypes') ?></strong></div>
     <div class="card-body">
-        <p class="text-muted small">These lane types will be automatically added when a new user registers.</p>
+        <p class="text-muted small"><?= lang('Admin.defaultLaneTypesHelp') ?></p>
         <?php if (! empty($defaultLaneTypes)): ?>
         <div class="mb-3">
             <?php foreach ($defaultLaneTypes as $i => $lt): ?>
@@ -51,27 +51,27 @@
                         <input type="hidden" name="type" value="lane_type">
                         <input type="hidden" name="index" value="<?= $i ?>">
                         <button type="submit" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;"
-                                onclick="return confirm('Remove this default?')"></button>
+                                onclick="return confirm('<?= lang('Admin.removeDefaultConfirm') ?>')"></button>
                     <?= form_close() ?>
                 </span>
             <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <p class="text-muted small mb-3">No defaults configured. The built-in defaults (25m, 50m, 100m) will be used.</p>
+        <p class="text-muted small mb-3"><?= lang('Admin.noDefaultLaneTypes') ?></p>
         <?php endif; ?>
 
         <?= form_open('/admin/defaults/add', ['class' => 'input-group']) ?>
             <input type="hidden" name="type" value="lane_type">
-            <input type="text" class="form-control" name="label" placeholder="e.g. 25m" required>
-            <button type="submit" class="btn btn-outline-primary">Add</button>
+            <input type="text" class="form-control" name="label" placeholder="<?= lang('Admin.laneTypePlaceholder') ?>" required>
+            <button type="submit" class="btn btn-outline-primary"><?= lang('App.add') ?></button>
         <?= form_close() ?>
     </div>
 </div>
 
 <div class="card">
-    <div class="card-header"><strong>Default Sighting Options for New Users</strong></div>
+    <div class="card-header"><strong><?= lang('Admin.defaultSightings') ?></strong></div>
     <div class="card-body">
-        <p class="text-muted small">These sighting options will be automatically added when a new user registers.</p>
+        <p class="text-muted small"><?= lang('Admin.defaultSightingsHelp') ?></p>
         <?php if (! empty($defaultSightings)): ?>
         <div class="mb-3">
             <?php foreach ($defaultSightings as $i => $s): ?>
@@ -81,19 +81,19 @@
                         <input type="hidden" name="type" value="sighting">
                         <input type="hidden" name="index" value="<?= $i ?>">
                         <button type="submit" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;"
-                                onclick="return confirm('Remove this default?')"></button>
+                                onclick="return confirm('<?= lang('Admin.removeDefaultConfirm') ?>')"></button>
                     <?= form_close() ?>
                 </span>
             <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <p class="text-muted small mb-3">No defaults configured. The built-in defaults (Front Sight, Aperture Sight, Scope) will be used.</p>
+        <p class="text-muted small mb-3"><?= lang('Admin.noDefaultSightings') ?></p>
         <?php endif; ?>
 
         <?= form_open('/admin/defaults/add', ['class' => 'input-group']) ?>
             <input type="hidden" name="type" value="sighting">
-            <input type="text" class="form-control" name="label" placeholder="e.g. Scope" required>
-            <button type="submit" class="btn btn-outline-primary">Add</button>
+            <input type="text" class="form-control" name="label" placeholder="<?= lang('Admin.sightingPlaceholder') ?>" required>
+            <button type="submit" class="btn btn-outline-primary"><?= lang('App.add') ?></button>
         <?= form_close() ?>
     </div>
 </div>

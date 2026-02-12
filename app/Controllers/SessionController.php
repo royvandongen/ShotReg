@@ -81,7 +81,7 @@ class SessionController extends BaseController
             $this->handlePhotoUploads($sessionId);
 
             return redirect()->to('/sessions')
-                             ->with('success', 'Session recorded.');
+                             ->with('success', lang('Sessions.recorded'));
         }
 
         // Get default location
@@ -130,7 +130,7 @@ class SessionController extends BaseController
             $this->handlePhotoUploads($id);
 
             return redirect()->to('/sessions/' . $id)
-                             ->with('success', 'Session updated.');
+                             ->with('success', lang('Sessions.updated'));
         }
 
         return view('sessions/form', array_merge([
@@ -173,7 +173,7 @@ class SessionController extends BaseController
             }
             $this->sessionModel->delete($id);
         }
-        return redirect()->to('/sessions')->with('success', 'Session deleted.');
+        return redirect()->to('/sessions')->with('success', lang('Sessions.deleted'));
     }
 
     public function deletePhoto(int $photoId)
@@ -186,7 +186,7 @@ class SessionController extends BaseController
                 $this->photoModel->delete($photoId);
             }
         }
-        return redirect()->back()->with('success', 'Photo removed.');
+        return redirect()->back()->with('success', lang('Sessions.photoRemoved'));
     }
 
     public function ajaxCreateLocation()

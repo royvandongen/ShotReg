@@ -1,30 +1,30 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('title') ?>Weapons<?= $this->endSection() ?>
+<?= $this->section('title') ?><?= lang('App.weapons') ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Weapons Catalog</h3>
+    <h3><?= lang('Weapons.title') ?></h3>
     <a href="/weapons/create" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Add Weapon
+        <i class="bi bi-plus-lg"></i> <?= lang('Weapons.addWeapon') ?>
     </a>
 </div>
 
 <?php if (empty($weapons)): ?>
     <div class="alert alert-info">
-        No weapons in your catalog yet. <a href="/weapons/create">Add your first weapon</a>.
+        <?= lang('Weapons.noWeapons') ?> <a href="/weapons/create"><?= lang('Weapons.addFirst') ?></a>.
     </div>
 <?php else: ?>
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Caliber</th>
-                    <th>Sighting</th>
-                    <th>Ownership</th>
-                    <th class="text-end">Actions</th>
+                    <th><?= lang('Weapons.name') ?></th>
+                    <th><?= lang('Weapons.type') ?></th>
+                    <th><?= lang('Weapons.caliber') ?></th>
+                    <th><?= lang('Weapons.sighting') ?></th>
+                    <th><?= lang('Weapons.ownership') ?></th>
+                    <th class="text-end"><?= lang('App.actions') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -36,9 +36,9 @@
                     <td><?= esc(ucfirst($weapon['sighting'] ?? '-')) ?></td>
                     <td>
                         <?php if ($weapon['ownership'] === 'association'): ?>
-                            <span class="badge bg-info">Association</span>
+                            <span class="badge bg-info"><?= lang('App.association') ?></span>
                         <?php else: ?>
-                            <span class="badge bg-success">Personal</span>
+                            <span class="badge bg-success"><?= lang('App.personal') ?></span>
                         <?php endif; ?>
                     </td>
                     <td class="text-end">
@@ -46,7 +46,7 @@
                             <i class="bi bi-pencil"></i>
                         </a>
                         <form method="post" action="/weapons/delete/<?= $weapon['id'] ?>"
-                              class="d-inline" onsubmit="return confirm('Delete this weapon?')">
+                              class="d-inline" onsubmit="return confirm('<?= lang('Weapons.deleteConfirm') ?>')">
                             <?= csrf_field() ?>
                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                 <i class="bi bi-trash"></i>
@@ -70,7 +70,7 @@
                         <small class="text-muted">
                             <?= esc(ucfirst($weapon['type'])) ?> &middot; <?= esc($weapon['caliber']) ?>
                             <?php if ($weapon['ownership'] === 'association'): ?>
-                                &middot; <span class="badge bg-info">Assoc</span>
+                                &middot; <span class="badge bg-info"><?= lang('App.assocShort') ?></span>
                             <?php endif; ?>
                         </small>
                     </div>

@@ -1,16 +1,16 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('title') ?>Users<?= $this->endSection() ?>
+<?= $this->section('title') ?><?= lang('Admin.usersTitle') ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3 class="mb-4">Users</h3>
+<h3 class="mb-4"><?= lang('Admin.usersTitle') ?></h3>
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="card text-center h-100">
             <div class="card-body">
                 <h2 class="mb-0"><?= count($users) ?></h2>
-                <small class="text-muted">Total Users</small>
+                <small class="text-muted"><?= lang('Admin.totalUsers') ?></small>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <div class="card text-center h-100">
             <div class="card-body">
                 <h2 class="mb-0"><?= array_sum(array_column($users, 'weapon_count')) ?></h2>
-                <small class="text-muted">Total Weapons</small>
+                <small class="text-muted"><?= lang('Admin.totalWeapons') ?></small>
             </div>
         </div>
     </div>
@@ -26,7 +26,7 @@
         <div class="card text-center h-100">
             <div class="card-body">
                 <h2 class="mb-0"><?= array_sum(array_column($users, 'session_count')) ?></h2>
-                <small class="text-muted">Total Sessions</small>
+                <small class="text-muted"><?= lang('Admin.totalSessions') ?></small>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
         <div class="card text-center h-100">
             <div class="card-body">
                 <h2 class="mb-0"><?= array_sum(array_column($users, 'location_count')) ?></h2>
-                <small class="text-muted">Total Locations</small>
+                <small class="text-muted"><?= lang('Admin.totalLocations') ?></small>
             </div>
         </div>
     </div>
@@ -47,13 +47,13 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control" name="q"
-                           value="<?= esc($search) ?>" placeholder="Search by username or email...">
+                           value="<?= esc($search) ?>" placeholder="<?= lang('Admin.searchPlaceholder') ?>">
                 </div>
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary"><?= lang('App.search') ?></button>
                 <?php if ($search !== ''): ?>
-                    <a href="/admin/users" class="btn btn-outline-secondary">Clear</a>
+                    <a href="/admin/users" class="btn btn-outline-secondary"><?= lang('App.clear') ?></a>
                 <?php endif; ?>
             </div>
         </form>
@@ -62,22 +62,22 @@
         <table class="table table-hover mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th class="text-center">Role</th>
-                    <th class="text-center">2FA</th>
-                    <th class="text-center">Weapons</th>
-                    <th class="text-center">Sessions</th>
-                    <th class="text-center">Locations</th>
-                    <th>Joined</th>
-                    <th class="text-center">Actions</th>
+                    <th><?= lang('Admin.username') ?></th>
+                    <th><?= lang('Admin.email') ?></th>
+                    <th class="text-center"><?= lang('Admin.role') ?></th>
+                    <th class="text-center"><?= lang('Admin.twoFa') ?></th>
+                    <th class="text-center"><?= lang('App.weapons') ?></th>
+                    <th class="text-center"><?= lang('App.sessions') ?></th>
+                    <th class="text-center"><?= lang('Settings.locations') ?></th>
+                    <th><?= lang('Admin.joined') ?></th>
+                    <th class="text-center"><?= lang('App.actions') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($users)): ?>
                 <tr>
                     <td colspan="9" class="text-center text-muted py-4">
-                        No users found<?= $search !== '' ? ' matching "' . esc($search) . '"' : '' ?>.
+                        <?= $search !== '' ? lang('Admin.noUsersMatchSearch', [esc($search)]) : lang('Admin.noUsersFound') ?>.
                     </td>
                 </tr>
                 <?php else: ?>
@@ -87,16 +87,16 @@
                     <td><?= esc($user['email']) ?></td>
                     <td class="text-center">
                         <?php if ($user['is_admin']): ?>
-                            <span class="badge bg-primary">Admin</span>
+                            <span class="badge bg-primary"><?= lang('Admin.adminBadge') ?></span>
                         <?php else: ?>
-                            <span class="badge bg-secondary">User</span>
+                            <span class="badge bg-secondary"><?= lang('Admin.userBadge') ?></span>
                         <?php endif; ?>
                     </td>
                     <td class="text-center">
                         <?php if ($user['totp_enabled']): ?>
-                            <i class="bi bi-shield-check text-success" title="2FA enabled"></i>
+                            <i class="bi bi-shield-check text-success" title="<?= lang('Admin.twoFaEnabled') ?>"></i>
                         <?php else: ?>
-                            <i class="bi bi-shield-x text-danger" title="2FA not enabled"></i>
+                            <i class="bi bi-shield-x text-danger" title="<?= lang('Admin.twoFaNotEnabled') ?>"></i>
                         <?php endif; ?>
                     </td>
                     <td class="text-center"><?= $user['weapon_count'] ?></td>
@@ -110,20 +110,20 @@
                             <?= form_open('/admin/users/toggle-admin/' . $user['id'], ['class' => 'd-inline']) ?>
                                 <?php if ($user['is_admin']): ?>
                                     <button type="submit" class="btn btn-outline-warning btn-sm"
-                                            title="Demote from admin"
-                                            onclick="return confirm('Demote <?= esc($user['username']) ?> from admin?')">
+                                            title="<?= lang('Admin.demoteFromAdmin') ?>"
+                                            onclick="return confirm('<?= lang('Admin.demoteConfirm', [esc($user['username'])]) ?>')">
                                         <i class="bi bi-arrow-down-circle"></i>
                                     </button>
                                 <?php else: ?>
                                     <button type="submit" class="btn btn-outline-primary btn-sm"
-                                            title="Promote to admin"
-                                            onclick="return confirm('Promote <?= esc($user['username']) ?> to admin?')">
+                                            title="<?= lang('Admin.promoteToAdmin') ?>"
+                                            onclick="return confirm('<?= lang('Admin.promoteConfirm', [esc($user['username'])]) ?>')">
                                         <i class="bi bi-arrow-up-circle"></i>
                                     </button>
                                 <?php endif; ?>
                             <?= form_close() ?>
                         <?php else: ?>
-                            <span class="text-muted" title="You cannot change your own role"><i class="bi bi-lock"></i></span>
+                            <span class="text-muted" title="<?= lang('Admin.cannotChangeOwnRole') ?>"><i class="bi bi-lock"></i></span>
                         <?php endif; ?>
                     </td>
                 </tr>

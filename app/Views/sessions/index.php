@@ -1,18 +1,18 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('title') ?>Sessions<?= $this->endSection() ?>
+<?= $this->section('title') ?><?= lang('App.sessions') ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Shooting Sessions</h3>
+    <h3><?= lang('Sessions.title') ?></h3>
     <a href="/sessions/create" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> New Session
+        <i class="bi bi-plus-lg"></i> <?= lang('Sessions.newSession') ?>
     </a>
 </div>
 
 <?php if (empty($sessions)): ?>
     <div class="alert alert-info">
-        No sessions recorded yet. <a href="/sessions/create">Record your first session</a>.
+        <?= lang('Sessions.noSessions') ?> <a href="/sessions/create"><?= lang('Sessions.recordFirst') ?></a>.
     </div>
 <?php else: ?>
     <div class="row">
@@ -46,13 +46,13 @@
                 </div>
                 <div class="card-footer bg-transparent">
                     <a href="/sessions/<?= $session['id'] ?>" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-eye"></i> View
+                        <i class="bi bi-eye"></i> <?= lang('App.view') ?>
                     </a>
                     <a href="/sessions/edit/<?= $session['id'] ?>" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-pencil"></i> Edit
+                        <i class="bi bi-pencil"></i> <?= lang('App.edit') ?>
                     </a>
                     <form method="post" action="/sessions/delete/<?= $session['id'] ?>"
-                          class="d-inline" onsubmit="return confirm('Delete this session?')">
+                          class="d-inline" onsubmit="return confirm('<?= lang('Sessions.deleteConfirm') ?>')">
                         <?= csrf_field() ?>
                         <button type="submit" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-trash"></i>
