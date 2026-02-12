@@ -6,7 +6,7 @@ use App\Models\UserModel;
 
 class LocaleController extends BaseController
 {
-    public function switch()
+    public function change()
     {
         $locale = $this->request->getPost('locale');
         $supported = config('App')->supportedLocales;
