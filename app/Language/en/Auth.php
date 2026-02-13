@@ -51,4 +51,7 @@ return [
     'enterValid6Digit'      => 'Please enter a valid 6-digit code.',
     'sessionExpiredRescan'  => 'Session expired. Please scan the QR code again and enter the new code.',
     '2faRequired'           => 'Two-factor authentication is required. Please set it up to continue.',
+
+    // Account disabled
+    'accountDisabled'       => 'Your account has been disabled. Please contact an administrator.',
 ];

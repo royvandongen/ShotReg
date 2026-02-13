@@ -25,6 +25,7 @@ class UserModel extends Model
         'password_hash',
         'is_admin',
         'is_approved',
+        'is_active',
         'totp_secret',
         'totp_enabled',
         'totp_last_timestamp',

@@ -50,6 +50,10 @@ class AuthController extends BaseController
                 return view('auth/login', ['errors' => ['login' => lang('Auth.accountPending')]]);
             }
 
+            if ($user === 'disabled') {
+                return view('auth/login', ['errors' => ['login' => lang('Auth.accountDisabled')]]);
+            }
+
             if (! $user) {
                 log_message('warning', 'Failed login attempt for user: {username} from IP: {ip}', [
                     'username' => $this->request->getPost('username'),

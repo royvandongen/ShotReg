@@ -51,4 +51,7 @@ return [
     'enterValid6Digit'      => 'Voer een geldige 6-cijferige code in.',
     'sessionExpiredRescan'  => 'Sessie verlopen. Scan de QR-code opnieuw en voer de nieuwe code in.',
     '2faRequired'           => 'Tweefactorauthenticatie is vereist. Stel het in om verder te gaan.',
+
+    // Account disabled
+    'accountDisabled'       => 'Je account is uitgeschakeld. Neem contact op met een beheerder.',
 ];

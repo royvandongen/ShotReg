@@ -66,4 +66,13 @@ return [
     'userApproved'         => '{0} has been approved.',
     'userRejected'         => '{0} has been rejected and removed.',
     'cannotRejectSelf'     => 'You cannot reject your own account.',
+
+    // Disable / Enable
+    'disabledBadge'        => 'Disabled',
+    'enableUser'           => 'Enable user',
+    'disableUser'          => 'Disable user',
+    'disableConfirm'       => 'Disable user {0}? They will not be able to log in.',
+    'userEnabled'          => '{0} has been enabled.',
+    'userDisabled'         => '{0} has been disabled.',
+    'cannotDisableSelf'    => 'You cannot disable your own account.',
 ];

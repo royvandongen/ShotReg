@@ -99,6 +99,8 @@
                     <td class="text-center">
                         <?php if (empty($user['is_approved'])): ?>
                             <span class="badge bg-warning text-dark"><?= lang('Admin.pendingBadge') ?></span>
+                        <?php elseif (empty($user['is_active'])): ?>
+                            <span class="badge bg-danger"><?= lang('Admin.disabledBadge') ?></span>
                         <?php elseif ($user['is_admin']): ?>
                             <span class="badge bg-primary"><?= lang('Admin.adminBadge') ?></span>
                         <?php else: ?>
@@ -146,6 +148,20 @@
                                             title="<?= lang('Admin.promoteToAdmin') ?>"
                                             onclick="return confirm('<?= lang('Admin.promoteConfirm', [esc($user['username'])]) ?>')">
                                         <i class="bi bi-arrow-up-circle"></i>
+                                    </button>
+                                <?php endif; ?>
+                            <?= form_close() ?>
+                            <?= form_open('/admin/users/toggle-active/' . $user['id'], ['class' => 'd-inline']) ?>
+                                <?php if ($user['is_active']): ?>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            title="<?= lang('Admin.disableUser') ?>"
+                                            onclick="return confirm('<?= lang('Admin.disableConfirm', [esc($user['username'])]) ?>')">
+                                        <i class="bi bi-person-slash"></i>
+                                    </button>
+                                <?php else: ?>
+                                    <button type="submit" class="btn btn-outline-success btn-sm"
+                                            title="<?= lang('Admin.enableUser') ?>">
+                                        <i class="bi bi-person-check"></i>
                                     </button>
                                 <?php endif; ?>
                             <?= form_close() ?>

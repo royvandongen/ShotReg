@@ -66,4 +66,13 @@ return [
     'userApproved'         => '{0} is goedgekeurd.',
     'userRejected'         => '{0} is afgewezen en verwijderd.',
     'cannotRejectSelf'     => 'Je kunt je eigen account niet afwijzen.',
+
+    // Disable / Enable
+    'disabledBadge'        => 'Uitgeschakeld',
+    'enableUser'           => 'Gebruiker inschakelen',
+    'disableUser'          => 'Gebruiker uitschakelen',
+    'disableConfirm'       => 'Gebruiker {0} uitschakelen? Deze kan dan niet meer inloggen.',
+    'userEnabled'          => '{0} is ingeschakeld.',
+    'userDisabled'         => '{0} is uitgeschakeld.',
+    'cannotDisableSelf'    => 'Je kunt je eigen account niet uitschakelen.',
 ];

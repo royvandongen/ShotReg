@@ -51,7 +51,7 @@ class Auth
     }
 
     /**
-     * @return array|string|false  User array on success, 'pending' if not approved, false on bad credentials.
+     * @return array|string|false  User array on success, 'pending'/'disabled' for blocked accounts, false on bad credentials.
      */
     public function attemptLogin(string $usernameOrEmail, string $password): array|string|false
     {
@@ -68,6 +68,10 @@ class Auth
 
         if (empty($user['is_approved'])) {
             return 'pending';
+        }
+
+        if (empty($user['is_active'])) {
+            return 'disabled';
         }
 
         return $user;
