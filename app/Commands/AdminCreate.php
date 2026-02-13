@@ -37,19 +37,25 @@ class AdminCreate extends BaseCommand
                               ->first();
 
         if ($existing) {
-            // Promote existing user to admin
             if ($existing['is_admin']) {
-                // Ensure admin is approved (may have been missed before this feature existed)
+                // Ensure the env-configured admin is always approved and active on boot
+                $updates = [];
                 if (empty($existing['is_approved'])) {
-                    $userModel->update($existing['id'], ['is_approved' => 1]);
-                    CLI::write("User '{$existing['username']}' is already an admin, now approved.", 'green');
+                    $updates['is_approved'] = 1;
+                }
+                if (empty($existing['is_active'])) {
+                    $updates['is_active'] = 1;
+                }
+                if ($updates) {
+                    $userModel->update($existing['id'], $updates);
+                    CLI::write("User '{$existing['username']}' is already an admin, ensured approved and active.", 'green');
                 } else {
                     CLI::write("User '{$existing['username']}' is already an admin.", 'yellow');
                 }
                 return 0;
             }
 
-            $userModel->update($existing['id'], ['is_admin' => 1, 'is_approved' => 1]);
+            $userModel->update($existing['id'], ['is_admin' => 1, 'is_approved' => 1, 'is_active' => 1]);
             CLI::write("Existing user '{$existing['username']}' promoted to admin.", 'green');
             return 0;
         }
