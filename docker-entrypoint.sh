@@ -65,7 +65,7 @@ if [ "$MIGRATIONS_TABLE_EXISTS" = "no" ]; then
 elif [ "$MIGRATIONS_TABLE_EXISTS" = "yes" ]; then
     echo "Checking migration status..."
     MIGRATION_STATUS_OUTPUT=$(php spark migrate:status 2>&1)
-    if echo "$MIGRATION_STATUS_OUTPUT" | grep -q "Pending"; then
+    if echo "$MIGRATION_STATUS_OUTPUT" | grep -q '| --- |'; then
         echo "Found pending migrations, running..."
         NEED_MIGRATIONS=true
     else
