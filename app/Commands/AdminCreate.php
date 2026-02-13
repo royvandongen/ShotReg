@@ -39,7 +39,13 @@ class AdminCreate extends BaseCommand
         if ($existing) {
             // Promote existing user to admin
             if ($existing['is_admin']) {
-                CLI::write("User '{$existing['username']}' is already an admin.", 'yellow');
+                // Ensure admin is approved (may have been missed before this feature existed)
+                if (empty($existing['is_approved'])) {
+                    $userModel->update($existing['id'], ['is_approved' => 1]);
+                    CLI::write("User '{$existing['username']}' is already an admin, now approved.", 'green');
+                } else {
+                    CLI::write("User '{$existing['username']}' is already an admin.", 'yellow');
+                }
                 return 0;
             }
 
