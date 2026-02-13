@@ -43,7 +43,7 @@ class AdminCreate extends BaseCommand
                 return 0;
             }
 
-            $userModel->update($existing['id'], ['is_admin' => 1]);
+            $userModel->update($existing['id'], ['is_admin' => 1, 'is_approved' => 1]);
             CLI::write("Existing user '{$existing['username']}' promoted to admin.", 'green');
             return 0;
         }
@@ -54,6 +54,7 @@ class AdminCreate extends BaseCommand
             'email'         => $email,
             'password_hash' => password_hash($password, PASSWORD_DEFAULT),
             'is_admin'      => 1,
+            'is_approved'   => 1,
         ]);
 
         // Seed default options (lane types, sightings)
