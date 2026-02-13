@@ -72,6 +72,8 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
     $routes->post('settings', 'AdminController::saveSettings');
     $routes->get('users', 'AdminController::users');
     $routes->post('users/toggle-admin/(:num)', 'AdminController::toggleAdmin/$1');
+    $routes->post('users/approve/(:num)', 'AdminController::approveUser/$1');
+    $routes->post('users/reject/(:num)', 'AdminController::rejectUser/$1');
     $routes->post('defaults/add', 'AdminController::addDefault');
     $routes->post('defaults/delete', 'AdminController::deleteDefault');
 });

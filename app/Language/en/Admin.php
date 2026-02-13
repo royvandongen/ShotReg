@@ -56,4 +56,14 @@ return [
     'userDemoted'          => '{0} has been demoted from admin.',
     'noUsersFound'         => 'No users found',
     'noUsersMatchSearch'   => 'No users found matching "{0}".',
+
+    // Approval
+    'pendingBadge'         => 'Pending',
+    'pendingUsers'         => 'Pending Approval',
+    'approve'              => 'Approve',
+    'reject'               => 'Reject',
+    'rejectConfirm'        => 'Reject and delete user {0}? This cannot be undone.',
+    'userApproved'         => '{0} has been approved.',
+    'userRejected'         => '{0} has been rejected and removed.',
+    'cannotRejectSelf'     => 'You cannot reject your own account.',
 ];

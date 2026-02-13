@@ -84,7 +84,7 @@ class AdminController extends BaseController
         $search = $this->request->getGet('q') ?? '';
 
         $builder = $db->table('users')
-            ->select('users.id, users.username, users.email, users.is_admin, users.totp_enabled, users.created_at')
+            ->select('users.id, users.username, users.email, users.is_admin, users.is_approved, users.totp_enabled, users.created_at')
             ->select('(SELECT COUNT(*) FROM weapons WHERE weapons.user_id = users.id) AS weapon_count')
             ->select('(SELECT COUNT(*) FROM shooting_sessions WHERE shooting_sessions.user_id = users.id) AS session_count')
             ->select('(SELECT COUNT(*) FROM locations WHERE locations.user_id = users.id) AS location_count');
@@ -131,5 +131,43 @@ class AdminController extends BaseController
 
         return redirect()->to('/admin/users')
                          ->with('success', $msg);
+    }
+
+    public function approveUser(int $userId)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($userId);
+
+        if (! $user) {
+            return redirect()->to('/admin/users')
+                             ->with('error', lang('Admin.userNotFound'));
+        }
+
+        $userModel->update($userId, ['is_approved' => 1]);
+
+        return redirect()->to('/admin/users')
+                         ->with('success', lang('Admin.userApproved', [esc($user['username'])]));
+    }
+
+    public function rejectUser(int $userId)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($userId);
+
+        if (! $user) {
+            return redirect()->to('/admin/users')
+                             ->with('error', lang('Admin.userNotFound'));
+        }
+
+        // Prevent rejecting yourself
+        if ($userId === (int) session()->get('user_id')) {
+            return redirect()->to('/admin/users')
+                             ->with('error', lang('Admin.cannotRejectSelf'));
+        }
+
+        $userModel->delete($userId);
+
+        return redirect()->to('/admin/users')
+                         ->with('success', lang('Admin.userRejected', [esc($user['username'])]));
     }
 }

@@ -56,4 +56,14 @@ return [
     'userDemoted'          => '{0} is gedegradeerd van beheerder.',
     'noUsersFound'         => 'Geen gebruikers gevonden',
     'noUsersMatchSearch'   => 'Geen gebruikers gevonden die overeenkomen met "{0}".',
+
+    // Approval
+    'pendingBadge'         => 'In afwachting',
+    'pendingUsers'         => 'Wachtend op goedkeuring',
+    'approve'              => 'Goedkeuren',
+    'reject'               => 'Afwijzen',
+    'rejectConfirm'        => 'Gebruiker {0} afwijzen en verwijderen? Dit kan niet ongedaan worden gemaakt.',
+    'userApproved'         => '{0} is goedgekeurd.',
+    'userRejected'         => '{0} is afgewezen en verwijderd.',
+    'cannotRejectSelf'     => 'Je kunt je eigen account niet afwijzen.',
 ];

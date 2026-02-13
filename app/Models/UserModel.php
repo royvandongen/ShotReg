@@ -24,6 +24,7 @@ class UserModel extends Model
         'locale',
         'password_hash',
         'is_admin',
+        'is_approved',
         'totp_secret',
         'totp_enabled',
         'totp_last_timestamp',

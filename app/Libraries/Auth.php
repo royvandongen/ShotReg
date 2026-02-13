@@ -29,10 +29,11 @@ class Auth
             unset($data['password']);
         }
 
-        // First user (or no admin exists) becomes admin automatically
+        // First user (or no admin exists) becomes admin + auto-approved
         $adminExists = $this->userModel->where('is_admin', 1)->countAllResults() > 0;
         if (! $adminExists) {
-            $data['is_admin'] = 1;
+            $data['is_admin']     = 1;
+            $data['is_approved']  = 1;
         }
 
         // Save locale from current session
@@ -49,7 +50,10 @@ class Auth
         return $userId;
     }
 
-    public function attemptLogin(string $usernameOrEmail, string $password): array|false
+    /**
+     * @return array|string|false  User array on success, 'pending' if not approved, false on bad credentials.
+     */
+    public function attemptLogin(string $usernameOrEmail, string $password): array|string|false
     {
         $user = $this->userModel
             ->groupStart()
@@ -60,6 +64,10 @@ class Auth
 
         if (! $user || ! password_verify($password, $user['password_hash'])) {
             return false;
+        }
+
+        if (empty($user['is_approved'])) {
+            return 'pending';
         }
 
         return $user;

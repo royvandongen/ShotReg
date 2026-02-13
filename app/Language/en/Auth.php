@@ -21,6 +21,8 @@ return [
 
     // Flash messages
     'accountCreated'        => 'Account created. Please log in.',
+    'accountCreatedPendingApproval' => 'Account created. An administrator must approve your account before you can log in.',
+    'accountPending'        => 'Your account is pending approval by an administrator.',
     'registrationDisabled'  => 'Registration is currently disabled.',
     'pleaseLoginFirst'      => 'Please log in first.',
     'userNotFound'          => 'User not found.',

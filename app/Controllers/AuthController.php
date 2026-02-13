@@ -46,6 +46,10 @@ class AuthController extends BaseController
                 $this->request->getPost('password')
             );
 
+            if ($user === 'pending') {
+                return view('auth/login', ['errors' => ['login' => lang('Auth.accountPending')]]);
+            }
+
             if (! $user) {
                 log_message('warning', 'Failed login attempt for user: {username} from IP: {ip}', [
                     'username' => $this->request->getPost('username'),
@@ -150,7 +154,7 @@ class AuthController extends BaseController
             ]);
 
             return redirect()->to('/auth/login')
-                             ->with('success', lang('Auth.accountCreated'));
+                             ->with('success', lang('Auth.accountCreatedPendingApproval'));
         }
 
         return view('auth/register');

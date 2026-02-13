@@ -21,6 +21,8 @@ return [
 
     // Flash messages
     'accountCreated'        => 'Account aangemaakt. Log in om verder te gaan.',
+    'accountCreatedPendingApproval' => 'Account aangemaakt. Een beheerder moet je account goedkeuren voordat je kunt inloggen.',
+    'accountPending'        => 'Je account wacht op goedkeuring door een beheerder.',
     'registrationDisabled'  => 'Registratie is momenteel uitgeschakeld.',
     'pleaseLoginFirst'      => 'Log eerst in.',
     'userNotFound'          => 'Gebruiker niet gevonden.',

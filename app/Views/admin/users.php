@@ -38,6 +38,17 @@
             </div>
         </div>
     </div>
+    <?php $pendingCount = count(array_filter($users, fn($u) => empty($u['is_approved']))); ?>
+    <?php if ($pendingCount > 0): ?>
+    <div class="col-6 col-md-3">
+        <div class="card text-center h-100 border-warning">
+            <div class="card-body">
+                <h2 class="mb-0 text-warning"><?= $pendingCount ?></h2>
+                <small class="text-muted"><?= lang('Admin.pendingUsers') ?></small>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <div class="card">
@@ -86,7 +97,9 @@
                     <td><strong><?= esc($user['username']) ?></strong></td>
                     <td><?= esc($user['email']) ?></td>
                     <td class="text-center">
-                        <?php if ($user['is_admin']): ?>
+                        <?php if (empty($user['is_approved'])): ?>
+                            <span class="badge bg-warning text-dark"><?= lang('Admin.pendingBadge') ?></span>
+                        <?php elseif ($user['is_admin']): ?>
                             <span class="badge bg-primary"><?= lang('Admin.adminBadge') ?></span>
                         <?php else: ?>
                             <span class="badge bg-secondary"><?= lang('Admin.userBadge') ?></span>
@@ -106,7 +119,21 @@
                         <small class="text-muted"><?= date('d M Y', strtotime($user['created_at'])) ?></small>
                     </td>
                     <td class="text-center">
-                        <?php if ((int) $user['id'] !== (int) session()->get('user_id')): ?>
+                        <?php if (empty($user['is_approved'])): ?>
+                            <?= form_open('/admin/users/approve/' . $user['id'], ['class' => 'd-inline']) ?>
+                                <button type="submit" class="btn btn-outline-success btn-sm"
+                                        title="<?= lang('Admin.approve') ?>">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            <?= form_close() ?>
+                            <?= form_open('/admin/users/reject/' . $user['id'], ['class' => 'd-inline']) ?>
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        title="<?= lang('Admin.reject') ?>"
+                                        onclick="return confirm('<?= lang('Admin.rejectConfirm', [esc($user['username'])]) ?>')">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            <?= form_close() ?>
+                        <?php elseif ((int) $user['id'] !== (int) session()->get('user_id')): ?>
                             <?= form_open('/admin/users/toggle-admin/' . $user['id'], ['class' => 'd-inline']) ?>
                                 <?php if ($user['is_admin']): ?>
                                     <button type="submit" class="btn btn-outline-warning btn-sm"
