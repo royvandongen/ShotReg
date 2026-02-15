@@ -18,6 +18,7 @@
 <?= form_open_multipart(
     ($action === 'create') ? 'sessions/create' : 'sessions/edit/' . $id
 ) ?>
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label for="session_date" class="form-label"><?= lang('Sessions.date') ?></label>
