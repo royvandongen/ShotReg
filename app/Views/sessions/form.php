@@ -16,9 +16,9 @@
 <?php endif; ?>
 
 <?= form_open_multipart(
-    ($action === 'create') ? 'sessions/create' : 'sessions/edit/' . $id
+    ($action === 'create') ? 'sessions/create' : 'sessions/edit/' . $id,
+    ['id' => 'sessionForm']
 ) ?>
-    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label for="session_date" class="form-label"><?= lang('Sessions.date') ?></label>
@@ -232,8 +232,20 @@ function getCsrfToken() {
 // Update the main form's hidden CSRF field after any AJAX call regenerates the token
 function refreshFormCsrf() {
     var csrf = getCsrfToken();
-    var hidden = document.querySelector('form input[name="' + csrf.name + '"]');
-    if (hidden) hidden.value = csrf.value;
+    var form = document.getElementById('sessionForm');
+    if (!form) return;
+
+    var hidden = form.querySelector('input[name="' + csrf.name + '"]');
+    if (hidden) {
+        hidden.value = csrf.value;
+    } else {
+        // Create field if it doesn't exist
+        hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = csrf.name;
+        hidden.value = csrf.value;
+        form.insertBefore(hidden, form.firstChild);
+    }
 }
 
 // Drag-and-drop photo reordering
