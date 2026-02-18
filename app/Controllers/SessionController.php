@@ -202,19 +202,21 @@ class SessionController extends BaseController
 
         if (! $this->locationModel->validate($data)) {
             return $this->response->setJSON([
-                'success' => false,
-                'errors'  => $this->locationModel->errors(),
+                'success'    => false,
+                'errors'     => $this->locationModel->errors(),
+                'csrf_token' => csrf_hash(),
             ]);
         }
 
         $id = $this->locationModel->insert($data);
 
         return $this->response->setJSON([
-            'success'  => true,
-            'location' => [
+            'success'    => true,
+            'location'   => [
                 'id'   => $id,
                 'name' => $data['name'],
             ],
+            'csrf_token' => csrf_hash(),
         ]);
     }
 
@@ -226,7 +228,7 @@ class SessionController extends BaseController
 
         $photoIds = $this->request->getPost('photo_ids');
         if (! is_array($photoIds)) {
-            return $this->response->setJSON(['success' => false]);
+            return $this->response->setJSON(['success' => false, 'csrf_token' => csrf_hash()]);
         }
 
         $userId = session()->get('user_id');
@@ -242,7 +244,7 @@ class SessionController extends BaseController
             }
         }
 
-        return $this->response->setJSON(['success' => true]);
+        return $this->response->setJSON(['success' => true, 'csrf_token' => csrf_hash()]);
     }
 
     protected function handlePhotoUploads(int $sessionId): void

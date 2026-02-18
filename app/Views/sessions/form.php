@@ -221,30 +221,25 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 <script>
-// Read current CSRF token from cookie (survives token regeneration)
+// CSRF token management — token is updated from AJAX responses
+var csrfName = '<?= csrf_token() ?>';
+var csrfValue = '<?= csrf_hash() ?>';
+
 function getCsrfToken() {
-    var name = '<?= csrf_token() ?>';
-    var cookieName = 'csrf_cookie_name';
-    var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + cookieName + '=([^;]+)'));
-    return { name: name, value: match ? decodeURIComponent(match[1]) : '<?= csrf_hash() ?>' };
+    return { name: csrfName, value: csrfValue };
 }
 
-// Update the main form's hidden CSRF field after any AJAX call regenerates the token
-function refreshFormCsrf() {
-    var csrf = getCsrfToken();
+// Update stored token and main form's hidden CSRF field from server response
+function refreshFormCsrf(newToken) {
+    if (newToken) {
+        csrfValue = newToken;
+    }
     var form = document.getElementById('sessionForm');
     if (!form) return;
 
-    var hidden = form.querySelector('input[name="' + csrf.name + '"]');
+    var hidden = form.querySelector('input[name="' + csrfName + '"]');
     if (hidden) {
-        hidden.value = csrf.value;
-    } else {
-        // Create field if it doesn't exist
-        hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = csrf.name;
-        hidden.value = csrf.value;
-        form.insertBefore(hidden, form.firstChild);
+        hidden.value = csrfValue;
     }
 }
 
@@ -277,7 +272,8 @@ function refreshFormCsrf() {
                 method: 'POST',
                 body: data,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            }).then(function() { refreshFormCsrf(); });
+            }).then(function(r) { return r.json(); })
+              .then(function(result) { refreshFormCsrf(result.csrf_token); });
         }
     });
 })();
@@ -340,7 +336,7 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
             errDiv.textContent = Object.values(result.errors).join(', ');
             errDiv.classList.remove('d-none');
         }
-        refreshFormCsrf();
+        refreshFormCsrf(result.csrf_token);
     });
 });
 
@@ -377,7 +373,7 @@ document.getElementById('saveWeaponBtn').addEventListener('click', function() {
             errDiv.textContent = Object.values(result.errors).join(', ');
             errDiv.classList.remove('d-none');
         }
-        refreshFormCsrf();
+        refreshFormCsrf(result.csrf_token);
     });
 });
 </script>

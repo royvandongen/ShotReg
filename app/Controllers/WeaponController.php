@@ -114,16 +114,18 @@ class WeaponController extends BaseController
 
         if (! $this->weaponModel->validate($data)) {
             return $this->response->setJSON([
-                'success' => false,
-                'errors'  => $this->weaponModel->errors(),
+                'success'    => false,
+                'errors'     => $this->weaponModel->errors(),
+                'csrf_token' => csrf_hash(),
             ]);
         }
 
         $id = $this->weaponModel->insert($data);
 
         return $this->response->setJSON([
-            'success' => true,
-            'weapon'  => ['id' => $id, 'name' => $data['name']],
+            'success'    => true,
+            'weapon'     => ['id' => $id, 'name' => $data['name']],
+            'csrf_token' => csrf_hash(),
         ]);
     }
 }
