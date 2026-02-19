@@ -2,7 +2,7 @@
 
 return [
     // App name
-    'appName' => 'ShotReg',
+    'appName' => 'Shotr',
 
     // Navigation
     'dashboard'      => 'Dashboard',

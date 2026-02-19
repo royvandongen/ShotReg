@@ -60,8 +60,8 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable=${{ github.event_name != 'pull_request' }}
           labels: |
-            org.opencontainers.image.title=ShotReg
-            org.opencontainers.image.description=ShotReg - CodeIgniter 4
+            org.opencontainers.image.title=Shotr
+            org.opencontainers.image.description=Shotr - CodeIgniter 4
             org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ env.VERSION }}

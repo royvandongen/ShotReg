@@ -85,7 +85,7 @@ class Auth
     public function getTotpQrCodeSvg(string $email, string $secret): string
     {
         $qrCodeUrl = $this->google2fa->getQRCodeUrl(
-            'ShotReg',
+            'Shotr',
             $email,
             $secret
         );

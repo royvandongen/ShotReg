@@ -1,7 +1,7 @@
 #!/bin/sh
 # Don't use set -e here, we want to handle errors explicitly
 
-echo "Starting ShotReg..."
+echo "Starting Shotr..."
 
 # Map friendly env var names to CI4 format
 if [ -n "$APP_BASE_URL" ] && [ -z "$app_baseURL" ]; then

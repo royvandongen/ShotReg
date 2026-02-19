@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $this->renderSection('title') ?> - ShotReg</title>
+    <title><?= $this->renderSection('title') ?> - Shotr</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -20,7 +20,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="/dashboard">
-                <i class="bi bi-crosshair"></i> ShotReg
+                <i class="bi bi-crosshair"></i> Shotr
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navMain">
@@ -133,7 +133,7 @@
     <?php if (session()->get('is_admin')): ?>
     <footer class="mt-5 py-3 border-top">
         <div class="container text-center text-muted small">
-            ShotReg &mdash; <?= esc(getenv('APP_VERSION') ?: 'dev') ?>
+            Shotr &mdash; <?= esc(getenv('APP_VERSION') ?: 'dev') ?>
         </div>
     </footer>
     <?php endif; ?>

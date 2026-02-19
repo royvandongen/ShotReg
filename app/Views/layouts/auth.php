@@ -11,7 +11,8 @@
         <div class="row justify-content-center mt-5">
             <div class="col-md-5 col-lg-4">
                 <div class="text-center mb-4">
-                    <h2>ShotReg</h2>
+                    <h2>Shotr</h2>
+                    <p class="text-muted mb-2"><em>Shoot It, Log It, Improve It.</em></p>
                     <div class="mt-2">
                         <form method="post" action="/locale/switch" class="d-inline">
                             <?= csrf_field() ?>
