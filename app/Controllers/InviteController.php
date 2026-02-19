@@ -48,10 +48,14 @@ class InviteController extends BaseController
             return redirect()->back()->with('error', lang('Invite.invalidEmail'));
         }
 
-        // Don't invite existing users
+        // Don't invite existing users — admins see a specific error; regular users get
+        // a generic response to prevent account enumeration via the invite form.
         $userModel = new UserModel();
         if ($userModel->where('email', $email)->first()) {
-            return redirect()->back()->with('error', lang('Invite.emailAlreadyRegistered'));
+            if ($isAdmin) {
+                return redirect()->back()->with('error', lang('Invite.emailAlreadyRegistered'));
+            }
+            return redirect()->back()->with('success', lang('Invite.inviteCreated'));
         }
 
         $invite = $this->inviteModel->createInvite($email, $userId);

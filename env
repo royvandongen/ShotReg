@@ -53,6 +53,8 @@
 # ENCRYPTION
 #--------------------------------------------------------------------
 
+# REQUIRED for encrypted SMTP password storage.
+# Generate with: php -r "echo 'hex2bin:'.bin2hex(random_bytes(32)).PHP_EOL;"
 # encryption.key =
 
 #--------------------------------------------------------------------

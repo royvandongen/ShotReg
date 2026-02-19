@@ -37,6 +37,7 @@ class AuthFilter implements FilterInterface
             if ($settingModel->getValue('force_2fa', '0') === '1') {
                 // Prevent redirect loop - don't redirect if we're already redirecting
                 if (! session()->get('redirecting_to_setup2fa')) {
+                    session()->regenerate(true);
                     session()->set('redirecting_to_setup2fa', true);
                     return redirect()->to('/auth/setup2fa')
                                      ->with('error', 'Two-factor authentication is required. Please set it up to continue.');

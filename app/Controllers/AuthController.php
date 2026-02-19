@@ -104,7 +104,7 @@ class AuthController extends BaseController
                 ]);
             }
 
-            $code = $this->request->getPost('totp_code');
+            $code = str_pad((string) $this->request->getPost('totp_code'), 6, '0', STR_PAD_LEFT);
             $userModel = new UserModel();
             $user = $userModel->find($userId);
 
@@ -185,15 +185,16 @@ class AuthController extends BaseController
         }
 
         if ($this->request->getMethod() === 'POST') {
-            $secret = session()->get('pending_totp_secret');
-            $code   = trim($this->request->getPost('totp_code') ?? '');
+            $secret    = session()->get('pending_totp_secret');
+            $secretAge = time() - (int) session()->get('pending_totp_secret_generated_at');
+            $code      = str_pad(trim($this->request->getPost('totp_code') ?? ''), 6, '0', STR_PAD_LEFT);
 
             // Validate code format
-            if (empty($code) || ! preg_match('/^\d{6}$/', $code)) {
-                $secret = session()->get('pending_totp_secret');
+            if (! preg_match('/^\d{6}$/', $code)) {
                 if (empty($secret)) {
                     $secret = $this->auth->generateTotpSecret();
                     session()->set('pending_totp_secret', $secret);
+                    session()->set('pending_totp_secret_generated_at', time());
                 }
                 $qrSvg = $this->auth->getTotpQrCodeSvg($user['email'], $secret);
                 return view('auth/setup2fa', [
@@ -203,10 +204,11 @@ class AuthController extends BaseController
                 ]);
             }
 
-            if (empty($secret)) {
-                // Secret expired or missing, generate a new one
+            // Secret missing or older than 15 minutes — force rescan
+            if (empty($secret) || $secretAge > 900) {
                 $secret = $this->auth->generateTotpSecret();
                 session()->set('pending_totp_secret', $secret);
+                session()->set('pending_totp_secret_generated_at', time());
                 $qrSvg = $this->auth->getTotpQrCodeSvg($user['email'], $secret);
                 return view('auth/setup2fa', [
                     'qrSvg'  => $qrSvg,
@@ -223,6 +225,7 @@ class AuthController extends BaseController
                     'totp_enabled' => 1,
                 ]);
                 session()->remove('pending_totp_secret');
+                session()->remove('pending_totp_secret_generated_at');
                 session()->set('totp_enabled', true);
                 return redirect()->to('/dashboard')
                                  ->with('success', lang('Auth.2faEnabled'));
@@ -237,12 +240,13 @@ class AuthController extends BaseController
             ]);
         }
 
-        // GET request - generate new secret if needed
-        // Note: Flash data is automatically removed after being displayed once
-        $secret = session()->get('pending_totp_secret');
-        if (empty($secret)) {
+        // GET request - generate new secret if needed or if older than 15 minutes
+        $secret    = session()->get('pending_totp_secret');
+        $secretAge = time() - (int) session()->get('pending_totp_secret_generated_at');
+        if (empty($secret) || $secretAge > 900) {
             $secret = $this->auth->generateTotpSecret();
             session()->set('pending_totp_secret', $secret);
+            session()->set('pending_totp_secret_generated_at', time());
         }
 
         $qrSvg = $this->auth->getTotpQrCodeSvg($user['email'], $secret);

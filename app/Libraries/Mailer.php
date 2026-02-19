@@ -120,11 +120,11 @@ class Mailer
         ];
 
         if ($protocol === 'smtp') {
-            $config['SMTPHost']   = $this->settings->getValue('smtp_host', '');
-            $config['SMTPPort']   = (int) $this->settings->getValue('smtp_port', '587');
-            $config['SMTPUser']   = $this->settings->getValue('smtp_user', '');
-            $config['SMTPPass']   = $this->settings->getValue('smtp_pass', '');
-            $config['SMTPCrypto'] = $this->settings->getValue('smtp_crypto', 'tls');
+            $config['SMTPHost']    = $this->settings->getValue('smtp_host', '');
+            $config['SMTPPort']    = (int) $this->settings->getValue('smtp_port', '587');
+            $config['SMTPUser']    = $this->settings->getValue('smtp_user', '');
+            $config['SMTPPass']    = $this->decryptSmtpPass($this->settings->getValue('smtp_pass', ''));
+            $config['SMTPCrypto']  = $this->settings->getValue('smtp_crypto', 'tls');
             $config['SMTPTimeout'] = 10;
         }
 
@@ -133,6 +133,25 @@ class Mailer
         $email->setFrom($fromAddress, $fromName);
 
         return $email;
+    }
+
+    /**
+     * Decrypt the stored SMTP password. Falls back to the raw value if the
+     * encryption key is not configured or the value was stored before encryption
+     * was enabled (backwards-compatibility).
+     */
+    protected function decryptSmtpPass(string $stored): string
+    {
+        if ($stored === '') {
+            return '';
+        }
+
+        try {
+            return service('encrypter')->decrypt(base64_decode($stored, true));
+        } catch (\Throwable) {
+            // Key not set, data not encrypted, or corrupt — return as-is
+            return $stored;
+        }
     }
 
     protected function renderTemplate(string $template, array $replacements): string

@@ -251,7 +251,13 @@ class AdminController extends BaseController
         // Only update password if provided (don't wipe existing)
         $newPass = $this->request->getPost('smtp_pass');
         if ($newPass !== '' && $newPass !== null) {
-            $this->settingModel->setValue('smtp_pass', $newPass);
+            try {
+                $encrypted = base64_encode(service('encrypter')->encrypt($newPass));
+            } catch (\Throwable) {
+                // Encryption key not configured — store as-is (unencrypted)
+                $encrypted = $newPass;
+            }
+            $this->settingModel->setValue('smtp_pass', $encrypted);
         }
 
         return redirect()->to('/admin/email')
