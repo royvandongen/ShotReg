@@ -25,10 +25,10 @@ class AuthController extends BaseController
     public function login()
     {
         if ($this->request->getMethod() === 'POST') {
-            // Rate limit: 5 login attempts per minute per IP
+            // Rate limit: 3 login attempts per minute per IP
             $throttler = service('throttler');
             $throttleKey = 'login_' . $this->sanitizeIpForCache($this->request->getIPAddress());
-            if (! $throttler->check($throttleKey, 5, MINUTE)) {
+            if (! $throttler->check($throttleKey, 3, MINUTE)) {
                 return view('auth/login', [
                     'errors' => ['login' => lang('Auth.tooManyAttempts')],
                 ]);
@@ -65,6 +65,8 @@ class AuthController extends BaseController
             }
 
             if ($user['totp_enabled']) {
+                // Regenerate session before storing any elevated state
+                session()->regenerate(true);
                 session()->set('pending_2fa_user_id', $user['id']);
                 return redirect()->to('/auth/verify2fa');
             }
@@ -93,10 +95,10 @@ class AuthController extends BaseController
         }
 
         if ($this->request->getMethod() === 'POST') {
-            // Rate limit: 5 TOTP attempts per minute per IP
+            // Rate limit: 3 TOTP attempts per minute per IP
             $throttler = service('throttler');
             $throttleKey = '2fa_' . $this->sanitizeIpForCache($this->request->getIPAddress());
-            if (! $throttler->check($throttleKey, 5, MINUTE)) {
+            if (! $throttler->check($throttleKey, 3, MINUTE)) {
                 return view('auth/verify2fa', [
                     'error' => lang('Auth.tooMany2faAttempts'),
                 ]);

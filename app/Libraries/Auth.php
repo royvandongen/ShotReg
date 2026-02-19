@@ -102,32 +102,16 @@ class Auth
     public function verifyTotp(string $secret, string $code, ?int $lastTimestamp = null): int|false
     {
         if ($lastTimestamp !== null) {
-            // First try verifyKeyNewer to prevent replay attacks
-            $result = $this->google2fa->verifyKeyNewer($secret, $code, $lastTimestamp);
-            if ($result !== false) {
-                return $result;
-            }
-            
-            // If verifyKeyNewer fails, check if the code is still valid using regular verification
-            // This handles cases where:
-            // 1. User entered wrong code (timestamp unchanged, but now entering correct code)
-            // 2. Code is valid but verifyKeyNewer rejected it because it's not strictly "newer"
-            if ($this->google2fa->verifyKey($secret, $code, 2)) {
-                // Code is valid - allow it if at least 2 seconds have passed since last timestamp
-                // This prevents immediate replay attacks (same code within 2 seconds) while
-                // allowing valid codes after failed attempts or when codes aren't strictly "newer"
-                $timeSinceLastTimestamp = time() - $lastTimestamp;
-                
-                if ($timeSinceLastTimestamp >= 2) {
-                    return time();
-                }
-            }
-            
-            // Code is invalid or too soon after last successful verification - verification failed
-            return false;
+            // verifyKeyNewer only accepts codes whose TOTP counter is strictly newer than
+            // the last accepted counter, preventing replay of already-used codes.
+            // Window=1 allows ±1 period (30 s) to account for clock drift.
+            $result = $this->google2fa->verifyKeyNewer($secret, $code, $lastTimestamp, 1);
+            return $result !== false ? $result : false;
         }
 
-        return $this->google2fa->verifyKey($secret, $code, 2) ? time() : false;
+        // First-time use (no previous timestamp stored): allow ±1 period for clock drift.
+        $result = $this->google2fa->verifyKey($secret, $code, 1);
+        return $result ? (int) floor(microtime(true) / 30) : false;
     }
 
     public function setLoggedIn(array $user): void
