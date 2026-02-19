@@ -29,6 +29,7 @@ class UserModel extends Model
         'totp_secret',
         'totp_enabled',
         'totp_last_timestamp',
+        'session_version',
     ];
 
     protected $validationRules = [

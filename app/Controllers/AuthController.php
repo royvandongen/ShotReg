@@ -7,6 +7,7 @@ use App\Libraries\Mailer;
 use App\Models\AppSettingModel;
 use App\Models\PasswordResetModel;
 use App\Models\UserModel;
+use App\Models\UserTokenModel;
 
 class AuthController extends BaseController
 {
@@ -20,6 +21,32 @@ class AuthController extends BaseController
     protected function sanitizeIpForCache(string $ip): string
     {
         return str_replace(['{', '}', '(', ')', '/', '\\', '@', ':'], '_', $ip);
+    }
+
+    /**
+     * Set a 30-day remember-me cookie in the response.
+     */
+    protected function setRememberCookie(string $cookieValue): void
+    {
+        service('response')->setCookie(
+            'remember_me',
+            $cookieValue,
+            time() + 30 * DAY,
+            '',
+            '/',
+            '',
+            false,
+            true,
+            'Lax'
+        );
+    }
+
+    /**
+     * Delete the remember-me cookie.
+     */
+    protected function deleteRememberCookie(): void
+    {
+        service('response')->setCookie('remember_me', '', time() - 3600, '', '/', '', false, true, 'Lax');
     }
 
     public function login()
@@ -64,14 +91,28 @@ class AuthController extends BaseController
                 return view('auth/login', ['errors' => ['login' => lang('Auth.invalidCredentials')]]);
             }
 
+            $rememberMe = (bool) $this->request->getPost('remember_me');
+
             if ($user['totp_enabled']) {
                 // Regenerate session before storing any elevated state
                 session()->regenerate(true);
                 session()->set('pending_2fa_user_id', $user['id']);
+                if ($rememberMe) {
+                    session()->set('pending_remember_me', true);
+                }
                 return redirect()->to('/auth/verify2fa');
             }
 
             $this->auth->setLoggedIn($user);
+
+            if ($rememberMe) {
+                $tokenModel = new UserTokenModel();
+                $deviceName = UserTokenModel::parseDeviceName($this->request->getUserAgent()->getAgentString());
+                $token      = $tokenModel->createToken($user['id'], false, $deviceName, $this->request->getIPAddress());
+                $this->setRememberCookie($token['cookie_value']);
+                session()->set('remember_selector', $token['selector']);
+            }
+
             // Check if 2FA is forced globally
             $settingModel = new AppSettingModel();
             if ($settingModel->getValue('force_2fa', '0') === '1') {
@@ -79,9 +120,8 @@ class AuthController extends BaseController
                 return redirect()->to('/auth/setup2fa')
                                  ->with('error', lang('Auth.2faRequired'));
             }
-            
-            return redirect()->to('/dashboard');
 
+            return redirect()->to('/dashboard');
         }
 
         return view('auth/login');
@@ -116,8 +156,29 @@ class AuthController extends BaseController
 
             if ($timestamp !== false) {
                 $userModel->update($userId, ['totp_last_timestamp' => $timestamp]);
+
+                $rememberMe      = (bool) session()->get('pending_remember_me');
+                $pendingSelector = session()->get('pending_remember_selector');
+
                 session()->remove('pending_2fa_user_id');
+                session()->remove('pending_remember_me');
+                session()->remove('pending_remember_selector');
+
                 $this->auth->setLoggedIn($user);
+
+                if ($pendingSelector) {
+                    // Auto-login via remember-me: mark this device as TOTP-trusted
+                    (new UserTokenModel())->markTotpTrusted($pendingSelector);
+                    session()->set('remember_selector', $pendingSelector);
+                } elseif ($rememberMe) {
+                    // Fresh login with "remember me": create a TOTP-trusted token
+                    $tokenModel = new UserTokenModel();
+                    $deviceName = UserTokenModel::parseDeviceName($this->request->getUserAgent()->getAgentString());
+                    $token      = $tokenModel->createToken($userId, true, $deviceName, $this->request->getIPAddress());
+                    $this->setRememberCookie($token['cookie_value']);
+                    session()->set('remember_selector', $token['selector']);
+                }
+
                 return redirect()->to('/dashboard');
             }
 
@@ -178,7 +239,7 @@ class AuthController extends BaseController
 
         $userModel = new UserModel();
         $user = $userModel->find($userId);
-        
+
         if (! $user) {
             return redirect()->to('/auth/login')
                              ->with('error', lang('Auth.userNotFound'));
@@ -322,6 +383,8 @@ class AuthController extends BaseController
             }
 
             $userModel = new UserModel();
+            $user      = $userModel->where('email', $reset['email'])->first();
+
             $userModel->where('email', $reset['email'])
                       ->set(['password_hash' => password_hash(
                           $this->request->getPost('password'),
@@ -330,6 +393,13 @@ class AuthController extends BaseController
                       ->update();
 
             $resetModel->markUsed($reset['id']);
+
+            // Revoke all sessions and remember-me tokens for security
+            if ($user) {
+                $this->auth->revokeAllSessions((int) $user['id']);
+            }
+
+            $this->deleteRememberCookie();
 
             return redirect()->to('/auth/login')
                              ->with('success', lang('Auth.passwordResetSuccess'));
@@ -340,7 +410,9 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        $this->auth->logout();
+        $rememberCookie = $this->request->getCookie('remember_me');
+        $this->auth->logout($rememberCookie ?: null);
+        $this->deleteRememberCookie();
         return redirect()->to('/auth/login');
     }
 }

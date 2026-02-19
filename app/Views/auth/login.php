@@ -32,6 +32,10 @@
                     <a href="/auth/forgot-password" class="small text-muted"><?= lang('Auth.forgotPassword') ?></a>
                 </div>
             </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" value="1">
+                <label class="form-check-label" for="remember_me"><?= lang('Auth.rememberMe') ?></label>
+            </div>
             <button type="submit" class="btn btn-primary w-100"><?= lang('Auth.login') ?></button>
         <?= form_close() ?>
 

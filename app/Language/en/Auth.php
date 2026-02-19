@@ -55,6 +55,10 @@ return [
     // Account disabled
     'accountDisabled'       => 'Your account has been disabled. Please contact an administrator.',
 
+    // Remember me / session management
+    'rememberMe'            => 'Keep me signed in for 30 days',
+    'sessionInvalidated'    => 'Your session has been signed out. Please log in again.',
+
     // Forgot / reset password
     'forgotPassword'        => 'Forgot password?',
     'forgotPasswordTitle'   => 'Reset Password',

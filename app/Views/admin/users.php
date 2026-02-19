@@ -3,7 +3,15 @@
 <?= $this->section('title') ?><?= lang('Admin.usersTitle') ?><?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<h3 class="mb-4"><?= lang('Admin.usersTitle') ?></h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><?= lang('Admin.usersTitle') ?></h3>
+    <?= form_open('/admin/users/force-logout-all') ?>
+        <button type="submit" class="btn btn-danger btn-sm"
+                onclick="return confirm('<?= lang('Admin.forceSignOutAllConfirm') ?>')">
+            <i class="bi bi-shield-exclamation"></i> <?= lang('Admin.forceSignOutAll') ?>
+        </button>
+    <?= form_close() ?>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
@@ -167,6 +175,15 @@
                             <?= form_close() ?>
                         <?php else: ?>
                             <span class="text-muted" title="<?= lang('Admin.cannotChangeOwnRole') ?>"><i class="bi bi-lock"></i></span>
+                        <?php endif; ?>
+                        <?php if ((int) $user['id'] !== (int) session()->get('user_id') && ! empty($user['is_approved'])): ?>
+                            <?= form_open('/admin/users/force-logout/' . $user['id'], ['class' => 'd-inline']) ?>
+                                <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                        title="<?= lang('Admin.forceSignOut') ?>"
+                                        onclick="return confirm('<?= lang('Admin.forceSignOutConfirm', [esc($user['username'])]) ?>')">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            <?= form_close() ?>
                         <?php endif; ?>
                     </td>
                 </tr>

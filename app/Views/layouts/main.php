@@ -108,6 +108,9 @@
                             <li><a class="dropdown-item" href="/auth/setup2fa">
                                 <i class="bi bi-shield-lock"></i> <?= lang('App.twoFaSettings') ?>
                             </a></li>
+                            <li><a class="dropdown-item" href="/profile/sessions">
+                                <i class="bi bi-devices"></i> <?= lang('Profile.sessionsTitle') ?>
+                            </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/auth/logout">
                                 <i class="bi bi-box-arrow-right"></i> <?= lang('App.logout') ?>

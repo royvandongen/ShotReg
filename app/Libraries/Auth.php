@@ -5,6 +5,7 @@ namespace App\Libraries;
 use App\Models\AppSettingModel;
 use App\Models\UserModel;
 use App\Models\UserOptionModel;
+use App\Models\UserTokenModel;
 use PragmaRX\Google2FA\Google2FA;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -118,12 +119,13 @@ class Auth
     {
         session()->regenerate();
         session()->set([
-            'user_id'      => $user['id'],
-            'username'     => $user['username'],
-            'is_admin'     => (bool) ($user['is_admin'] ?? false),
-            'totp_enabled' => (bool) ($user['totp_enabled'] ?? false),
-            'locale'       => $user['locale'] ?? 'en',
-            'logged_in'    => true,
+            'user_id'         => $user['id'],
+            'username'        => $user['username'],
+            'is_admin'        => (bool) ($user['is_admin'] ?? false),
+            'totp_enabled'    => (bool) ($user['totp_enabled'] ?? false),
+            'locale'          => $user['locale'] ?? 'en',
+            'logged_in'       => true,
+            'session_version' => (int) ($user['session_version'] ?? 1),
         ]);
     }
 
@@ -149,8 +151,70 @@ class Auth
         return session()->get('user_id');
     }
 
-    public function logout(): void
+    /**
+     * Log out: destroy the session and optionally revoke the remember-me token.
+     */
+    public function logout(?string $rememberCookie = null): void
     {
+        if ($rememberCookie) {
+            $parts = explode(':', $rememberCookie, 2);
+            if (! empty($parts[0])) {
+                (new UserTokenModel())->revokeBySelector($parts[0]);
+            }
+        }
+
         session()->destroy();
+    }
+
+    /**
+     * Revoke all active sessions for a user:
+     *  - Increments session_version (invalidates all PHP sessions on next request)
+     *  - Deletes all remember-me tokens
+     */
+    public function revokeAllSessions(int $userId): void
+    {
+        $this->userModel->db->query(
+            'UPDATE users SET session_version = session_version + 1 WHERE id = ?',
+            [$userId]
+        );
+
+        (new UserTokenModel())->revokeAllForUser($userId);
+    }
+
+    /**
+     * Attempt to log in from a remember-me cookie value.
+     *
+     * Returns an array with:
+     *   'user'         => $userRow
+     *   'totp_trusted' => bool  (whether this device can skip TOTP)
+     *   'selector'     => string
+     *   'new_cookie'   => string  (rotated cookie value to set in response)
+     *
+     * Returns false on failure.
+     */
+    public function attemptRememberLogin(string $cookieValue): array|false
+    {
+        $tokenModel = new UserTokenModel();
+        $token      = $tokenModel->findAndValidate($cookieValue);
+
+        if (! $token) {
+            return false;
+        }
+
+        $user = $this->userModel->find($token['user_id']);
+
+        if (! $user || empty($user['is_approved']) || empty($user['is_active'])) {
+            // Revoke token for disabled/deleted users
+            $selector = explode(':', $cookieValue)[0];
+            $tokenModel->revokeBySelector($selector);
+            return false;
+        }
+
+        return [
+            'user'         => $user,
+            'totp_trusted' => (bool) $token['totp_trusted'],
+            'selector'     => explode(':', $cookieValue)[0],
+            'new_cookie'   => $token['new_cookie_value'],
+        ];
     }
 }

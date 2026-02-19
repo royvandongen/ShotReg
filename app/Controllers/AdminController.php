@@ -2,12 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Auth;
 use App\Libraries\Mailer;
 use App\Models\AppSettingModel;
 use App\Models\InviteModel;
 use App\Models\UserModel;
 use App\Models\UserOptionModel;
 use App\Models\UserSettingModel;
+use App\Models\UserTokenModel;
 
 class AdminController extends BaseController
 {
@@ -398,5 +400,51 @@ class AdminController extends BaseController
 
         return redirect()->to('/admin/invites')
                          ->with('success', lang('Admin.invitesRevoked', [$count, esc($user['username'])]));
+    }
+
+    // -------------------------------------------------------------------------
+    // Force Logout
+    // -------------------------------------------------------------------------
+
+    /**
+     * Force sign out a specific user: invalidate all their sessions and tokens.
+     */
+    public function forceLogout(int $userId)
+    {
+        $userModel = new UserModel();
+        $user      = $userModel->find($userId);
+
+        if (! $user) {
+            return redirect()->to('/admin/users')->with('error', lang('Admin.userNotFound'));
+        }
+
+        // Cannot force-sign-out yourself this way (use regular logout instead)
+        if ($userId === (int) session()->get('user_id')) {
+            return redirect()->to('/admin/users')->with('error', lang('Admin.cannotSignOutSelf'));
+        }
+
+        (new Auth())->revokeAllSessions($userId);
+
+        return redirect()->to('/admin/users')
+                         ->with('success', lang('Admin.userSignedOut', [esc($user['username'])]));
+    }
+
+    /**
+     * Emergency: sign out ALL other users (increments session_version for everyone
+     * except the current admin, and deletes all their remember-me tokens).
+     */
+    public function forceLogoutAll()
+    {
+        $currentUserId = (int) session()->get('user_id');
+        $db            = \Config\Database::connect();
+
+        // Invalidate all active PHP sessions for other users
+        $db->query('UPDATE users SET session_version = session_version + 1 WHERE id != ?', [$currentUserId]);
+
+        // Delete all remember-me tokens for other users
+        (new UserTokenModel())->where('user_id !=', $currentUserId)->delete();
+
+        return redirect()->to('/admin/users')
+                         ->with('success', lang('Admin.allUsersSignedOut'));
     }
 }

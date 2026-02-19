@@ -76,6 +76,15 @@ return [
     'userDisabled'         => '{0} is uitgeschakeld.',
     'cannotDisableSelf'    => 'Je kunt je eigen account niet uitschakelen.',
 
+    // Force sign out
+    'forceSignOut'         => 'Gebruiker afmelden',
+    'forceSignOutConfirm'  => 'Alle sessies van {0} afmelden? Ze moeten opnieuw inloggen.',
+    'userSignedOut'        => '{0} is afgemeld bij alle sessies.',
+    'forceSignOutAll'      => 'Noodgeval: alle gebruikers afmelden',
+    'forceSignOutAllConfirm' => 'ALLE andere gebruikers onmiddellijk afmelden? Ze moeten opnieuw inloggen.',
+    'allUsersSignedOut'    => 'Alle andere gebruikers zijn afgemeld.',
+    'cannotSignOutSelf'    => 'Je kunt je eigen account niet geforceerd afmelden.',
+
     // Invites (settings toggles)
     'invitesSection'          => 'Uitnodigingen',
     'enableInvites'           => 'Uitnodigingssysteem inschakelen',

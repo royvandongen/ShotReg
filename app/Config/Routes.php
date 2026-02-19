@@ -65,6 +65,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('profile', 'ProfileController::index');
     $routes->post('profile/update', 'ProfileController::update');
     $routes->post('profile/change-password', 'ProfileController::changePassword');
+    $routes->get('profile/sessions', 'ProfileController::sessions');
+    $routes->post('profile/sessions/revoke/(:alphanum)', 'ProfileController::revokeSession/$1');
+    $routes->post('profile/sessions/revoke-others', 'ProfileController::revokeOtherSessions');
 
     // Settings
     $routes->get('settings', 'SettingsController::index');
@@ -102,4 +105,8 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
     $routes->post('invites/send', 'AdminController::sendInvite');
     $routes->post('invites/set-limit/(:num)', 'AdminController::setUserInviteLimit/$1');
     $routes->post('invites/revoke/(:num)', 'AdminController::revokeUserInvites/$1');
+
+    // Force logout
+    $routes->post('users/force-logout/(:num)', 'AdminController::forceLogout/$1');
+    $routes->post('users/force-logout-all', 'AdminController::forceLogoutAll');
 });

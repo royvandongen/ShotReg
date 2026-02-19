@@ -55,6 +55,10 @@ return [
     // Account disabled
     'accountDisabled'       => 'Je account is uitgeschakeld. Neem contact op met een beheerder.',
 
+    // Remember me / session management
+    'rememberMe'            => '30 dagen ingelogd blijven',
+    'sessionInvalidated'    => 'Je sessie is afgemeld. Log opnieuw in.',
+
     // Forgot / reset password
     'forgotPassword'        => 'Wachtwoord vergeten?',
     'forgotPasswordTitle'   => 'Wachtwoord herstellen',

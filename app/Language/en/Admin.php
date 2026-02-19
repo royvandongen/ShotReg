@@ -76,6 +76,15 @@ return [
     'userDisabled'         => '{0} has been disabled.',
     'cannotDisableSelf'    => 'You cannot disable your own account.',
 
+    // Force sign out
+    'forceSignOut'         => 'Sign out user',
+    'forceSignOutConfirm'  => 'Sign out all sessions for {0}? They will need to log in again.',
+    'userSignedOut'        => '{0} has been signed out of all sessions.',
+    'forceSignOutAll'      => 'Emergency: Sign out all users',
+    'forceSignOutAllConfirm' => 'Sign out ALL other users immediately? They will need to log in again.',
+    'allUsersSignedOut'    => 'All other users have been signed out.',
+    'cannotSignOutSelf'    => 'You cannot force sign out your own account.',
+
     // Invites (settings toggles)
     'invitesSection'          => 'Invitations',
     'enableInvites'           => 'Enable invitation system',

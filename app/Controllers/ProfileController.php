@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Auth;
 use App\Models\UserModel;
+use App\Models\UserTokenModel;
 
 class ProfileController extends BaseController
 {
@@ -85,7 +87,77 @@ class ProfileController extends BaseController
             'password_hash' => password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT),
         ]);
 
-        return redirect()->to('/profile')
-                         ->with('success', lang('Profile.passwordChanged'));
+        // Revoke all sessions (including remember-me tokens) for security
+        (new Auth())->revokeAllSessions($userId);
+
+        // Delete the remember-me cookie — user must log in again
+        service('response')->setCookie('remember_me', '', time() - 3600, '', '/', '', false, true, 'Lax');
+
+        // Destroy the current session so the user is prompted to re-authenticate
+        session()->destroy();
+
+        return redirect()->to('/auth/login')
+                         ->with('success', lang('Profile.passwordChangedSignedOut'));
+    }
+
+    /**
+     * Show all active remembered sessions (user_tokens) for the logged-in user.
+     */
+    public function sessions()
+    {
+        $userId     = (int) session()->get('user_id');
+        $tokenModel = new UserTokenModel();
+        $tokens     = $tokenModel->getActiveForUser($userId);
+
+        return view('profile/sessions', [
+            'tokens'          => $tokens,
+            'currentSelector' => session()->get('remember_selector'),
+        ]);
+    }
+
+    /**
+     * Sign out a single remembered session by selector.
+     */
+    public function revokeSession(string $selector)
+    {
+        $userId     = (int) session()->get('user_id');
+        $tokenModel = new UserTokenModel();
+
+        // Verify the token belongs to this user
+        $token = $tokenModel->where('selector', $selector)
+                            ->where('user_id', $userId)
+                            ->first();
+
+        if ($token) {
+            $tokenModel->revokeBySelector($selector);
+
+            // If revoking the current remember-me session, clear the cookie too
+            if (session()->get('remember_selector') === $selector) {
+                service('response')->setCookie('remember_me', '', time() - 3600, '', '/', '', false, true, 'Lax');
+                session()->remove('remember_selector');
+            }
+        }
+
+        return redirect()->to('/profile/sessions')
+                         ->with('success', lang('Profile.sessionRevoked'));
+    }
+
+    /**
+     * Sign out all other remembered sessions (keep only the current one).
+     */
+    public function revokeOtherSessions()
+    {
+        $userId          = (int) session()->get('user_id');
+        $currentSelector = session()->get('remember_selector') ?? '';
+        $tokenModel      = new UserTokenModel();
+
+        if ($currentSelector) {
+            $tokenModel->revokeAllForUserExcept($userId, $currentSelector);
+        } else {
+            $tokenModel->revokeAllForUser($userId);
+        }
+
+        return redirect()->to('/profile/sessions')
+                         ->with('success', lang('Profile.otherSessionsRevoked'));
     }
 }
