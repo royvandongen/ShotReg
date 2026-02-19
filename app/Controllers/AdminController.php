@@ -24,13 +24,14 @@ class AdminController extends BaseController
         $defaultSightings = json_decode($this->settingModel->getValue('default_sightings', '[]'), true) ?: [];
 
         return view('admin/settings', [
-            'registrationEnabled' => $this->settingModel->getValue('registration_enabled', '1'),
-            'force2fa'            => $this->settingModel->getValue('force_2fa', '0'),
-            'invitesEnabled'      => $this->settingModel->getValue('invites_enabled', '0'),
-            'userInvitesEnabled'  => $this->settingModel->getValue('user_invites_enabled', '0'),
-            'userInviteLimit'     => $this->settingModel->getValue('user_invite_limit', '5'),
-            'defaultLaneTypes'    => $defaultLaneTypes,
-            'defaultSightings'    => $defaultSightings,
+            'registrationEnabled'  => $this->settingModel->getValue('registration_enabled', '1'),
+            'force2fa'             => $this->settingModel->getValue('force_2fa', '0'),
+            'invitesEnabled'       => $this->settingModel->getValue('invites_enabled', '0'),
+            'userInvitesEnabled'   => $this->settingModel->getValue('user_invites_enabled', '0'),
+            'userInviteLimit'      => $this->settingModel->getValue('user_invite_limit', '5'),
+            'resetExpiryMinutes'   => $this->settingModel->getValue('password_reset_expiry_minutes', '60'),
+            'defaultLaneTypes'     => $defaultLaneTypes,
+            'defaultSightings'     => $defaultSightings,
         ]);
     }
 
@@ -43,6 +44,9 @@ class AdminController extends BaseController
 
         $limit = max(0, (int) $this->request->getPost('user_invite_limit'));
         $this->settingModel->setValue('user_invite_limit', (string) $limit);
+
+        $expiry = max(1, (int) $this->request->getPost('password_reset_expiry_minutes'));
+        $this->settingModel->setValue('password_reset_expiry_minutes', (string) $expiry);
 
         return redirect()->to('/admin/settings')
                          ->with('success', lang('Admin.settingsSaved'));
@@ -223,7 +227,6 @@ class AdminController extends BaseController
             'smtpCrypto'           => $this->settingModel->getValue('smtp_crypto', 'tls'),
             'emailFromAddress'     => $this->settingModel->getValue('email_from_address', ''),
             'emailFromName'        => $this->settingModel->getValue('email_from_name', 'Shotr'),
-            'resetExpiryMinutes'   => $this->settingModel->getValue('password_reset_expiry_minutes', '60'),
             'templateInvite'       => $this->settingModel->getValue('email_template_invite') ?: $mailer->defaultInviteTemplate(),
             'templateReset'        => $this->settingModel->getValue('email_template_reset') ?: $mailer->defaultResetTemplate(),
         ]);
@@ -231,7 +234,6 @@ class AdminController extends BaseController
 
     public function saveEmailSettings()
     {
-        $keys = ['email_protocol', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_crypto', 'email_from_address', 'email_from_name'];
         $postMap = [
             'email_protocol'    => 'email_protocol',
             'smtp_host'         => 'smtp_host',
@@ -245,9 +247,6 @@ class AdminController extends BaseController
         foreach ($postMap as $postKey => $settingKey) {
             $this->settingModel->setValue($settingKey, trim($this->request->getPost($postKey) ?? ''));
         }
-
-        $expiry = max(1, (int) $this->request->getPost('password_reset_expiry_minutes'));
-        $this->settingModel->setValue('password_reset_expiry_minutes', (string) $expiry);
 
         // Only update password if provided (don't wipe existing)
         $newPass = $this->request->getPost('smtp_pass');

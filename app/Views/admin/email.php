@@ -69,20 +69,6 @@
                 </div>
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label for="password_reset_expiry_minutes" class="form-label">
-                        <?= lang('Admin.resetExpiryMinutes') ?>
-                    </label>
-                    <div class="input-group" style="max-width: 180px;">
-                        <input type="number" class="form-control" id="password_reset_expiry_minutes"
-                               name="password_reset_expiry_minutes"
-                               value="<?= esc($resetExpiryMinutes) ?>" min="1">
-                        <span class="input-group-text"><?= lang('Admin.minutes') ?></span>
-                    </div>
-                </div>
-            </div>
-
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary"><?= lang('App.save') ?></button>
             </div>

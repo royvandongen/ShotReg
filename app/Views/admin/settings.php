@@ -68,6 +68,21 @@
                 <div class="form-text"><?= lang('Admin.userInviteLimitHelp') ?></div>
             </div>
 
+            <hr>
+            <h6 class="mb-3"><?= lang('Admin.passwordResetSection') ?></h6>
+
+            <div class="mb-4">
+                <label for="password_reset_expiry_minutes" class="form-label">
+                    <?= lang('Admin.resetExpiryMinutes') ?>
+                </label>
+                <div class="input-group" style="max-width: 180px;">
+                    <input type="number" class="form-control" id="password_reset_expiry_minutes"
+                           name="password_reset_expiry_minutes"
+                           value="<?= esc($resetExpiryMinutes) ?>" min="1">
+                    <span class="input-group-text"><?= lang('Admin.minutes') ?></span>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary"><?= lang('Admin.saveSettings') ?></button>
         <?= form_close() ?>
     </div>

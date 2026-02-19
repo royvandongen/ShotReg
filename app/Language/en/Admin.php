@@ -106,6 +106,7 @@ return [
     'templateResetTitle'      => 'Password Reset Email Template',
     'templatePlaceholders'    => 'Available placeholders:',
     'saveTemplate'            => 'Save Template',
+    'passwordResetSection'    => 'Password Reset',
     'resetExpiryMinutes'      => 'Password reset link expiry',
     'minutes'                 => 'min',
     'm365Note'                => 'For Microsoft 365 / Outlook, use host <code>smtp-mail.outlook.com</code>, port <code>587</code>, encryption <code>TLS</code>, and your email address and password.',

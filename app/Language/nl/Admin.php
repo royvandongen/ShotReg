@@ -106,6 +106,7 @@ return [
     'templateResetTitle'      => 'Wachtwoordherstel-e-mailsjabloon',
     'templatePlaceholders'    => 'Beschikbare plaatshouders:',
     'saveTemplate'            => 'Sjabloon opslaan',
+    'passwordResetSection'    => 'Wachtwoord herstellen',
     'resetExpiryMinutes'      => 'Vervaltijd wachtwoordherstelkoppeling',
     'minutes'                 => 'min',
     'm365Note'                => 'Voor Microsoft 365 / Outlook, gebruik host <code>smtp-mail.outlook.com</code>, poort <code>587</code>, versleuteling <code>TLS</code>, en je e-mailadres en wachtwoord.',
