@@ -130,6 +130,14 @@
         <?= $this->renderSection('content') ?>
     </div>
 
+    <?php if (session()->get('is_admin')): ?>
+    <footer class="mt-5 py-3 border-top">
+        <div class="container text-center text-muted small">
+            ShotReg &mdash; <?= esc(getenv('APP_VERSION') ?: 'dev') ?>
+        </div>
+    </footer>
+    <?php endif; ?>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <?= $this->renderSection('scripts') ?>
 </body>

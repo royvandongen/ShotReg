@@ -51,6 +51,10 @@ RUN mkdir -p writable/cache writable/logs writable/session writable/uploads/phot
     && chown -R www-data:www-data writable \
     && chmod -R 775 writable
 
+# Bake version into the image at build time
+ARG APP_VERSION=dev
+ENV APP_VERSION=${APP_VERSION}
+
 # Copy entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
