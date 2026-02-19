@@ -54,4 +54,16 @@ return [
 
     // Account disabled
     'accountDisabled'       => 'Je account is uitgeschakeld. Neem contact op met een beheerder.',
+
+    // Forgot / reset password
+    'forgotPassword'        => 'Wachtwoord vergeten?',
+    'forgotPasswordTitle'   => 'Wachtwoord herstellen',
+    'forgotPasswordHelp'    => 'Voer je e-mailadres in en we sturen je een herstelkoppeling als er een account bestaat.',
+    'sendResetLink'         => 'Herstelkoppeling versturen',
+    'resetEmailSent'        => 'Als dat e-mailadres geregistreerd is, is er een herstelkoppeling verstuurd. Controleer je inbox.',
+    'resetPasswordTitle'    => 'Nieuw wachtwoord instellen',
+    'newPassword'           => 'Nieuw wachtwoord',
+    'setPassword'           => 'Wachtwoord instellen',
+    'passwordResetSuccess'  => 'Wachtwoord succesvol hersteld. Je kunt nu inloggen.',
+    'invalidResetToken'     => 'Deze herstelkoppeling is ongeldig of verlopen. Vraag een nieuwe aan.',
 ];

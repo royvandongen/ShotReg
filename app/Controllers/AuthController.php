@@ -3,8 +3,10 @@
 namespace App\Controllers;
 
 use App\Libraries\Auth;
-use App\Models\UserModel;
+use App\Libraries\Mailer;
 use App\Models\AppSettingModel;
+use App\Models\PasswordResetModel;
+use App\Models\UserModel;
 
 class AuthController extends BaseController
 {
@@ -247,6 +249,84 @@ class AuthController extends BaseController
             'qrSvg'  => $qrSvg,
             'secret' => $secret,
         ]);
+    }
+
+    public function forgotPassword()
+    {
+        if ($this->request->getMethod() === 'POST') {
+            // Rate limit: 3 attempts per 10 minutes per IP
+            $throttler   = service('throttler');
+            $throttleKey = 'forgot_' . $this->sanitizeIpForCache($this->request->getIPAddress());
+            if (! $throttler->check($throttleKey, 3, 10 * MINUTE)) {
+                return view('auth/forgot_password', [
+                    'errors' => ['email' => lang('Auth.tooManyAttempts')],
+                ]);
+            }
+
+            $email = trim($this->request->getPost('email') ?? '');
+
+            if (! $this->validateData(['email' => $email], ['email' => 'required|valid_email'])) {
+                return view('auth/forgot_password', ['errors' => $this->validator->getErrors()]);
+            }
+
+            // Always show the same message to prevent user enumeration
+            $userModel = new UserModel();
+            $user      = $userModel->where('email', $email)->first();
+
+            if ($user && ! empty($user['is_active'])) {
+                $resetModel = new PasswordResetModel();
+                $token      = $resetModel->createToken($email);
+
+                $mailer = new Mailer();
+                if ($mailer->isConfigured()) {
+                    $mailer->sendPasswordReset($email, $token);
+                }
+            }
+
+            return redirect()->to('/auth/forgot-password')
+                             ->with('success', lang('Auth.resetEmailSent'));
+        }
+
+        return view('auth/forgot_password');
+    }
+
+    public function resetPassword(string $token)
+    {
+        $resetModel = new PasswordResetModel();
+        $reset      = $resetModel->findValid($token);
+
+        if (! $reset) {
+            return view('auth/reset_password', ['invalidToken' => true]);
+        }
+
+        if ($this->request->getMethod() === 'POST') {
+            $rules = [
+                'password'         => 'required|min_length[8]',
+                'password_confirm' => 'required|matches[password]',
+            ];
+
+            if (! $this->validateData($this->request->getPost(), $rules)) {
+                return view('auth/reset_password', [
+                    'token'  => $token,
+                    'errors' => $this->validator->getErrors(),
+                ]);
+            }
+
+            $userModel = new UserModel();
+            $userModel->where('email', $reset['email'])
+                      ->set(['password_hash' => password_hash(
+                          $this->request->getPost('password'),
+                          PASSWORD_DEFAULT
+                      )])
+                      ->update();
+
+            $resetModel->markUsed($reset['id']);
+
+            return redirect()->to('/auth/login')
+                             ->with('success', lang('Auth.passwordResetSuccess'));
+        }
+
+        return view('auth/reset_password', ['token' => $token]);
     }
 
     public function logout()

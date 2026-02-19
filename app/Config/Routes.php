@@ -17,6 +17,16 @@ $routes->post('auth/verify2fa', 'AuthController::verify2fa');
 $routes->get('auth/logout', 'AuthController::logout');
 $routes->post('locale/switch', 'LocaleController::change');
 
+// Forgot / reset password (public)
+$routes->get('auth/forgot-password', 'AuthController::forgotPassword');
+$routes->post('auth/forgot-password', 'AuthController::forgotPassword');
+$routes->get('auth/reset-password/(:alphanum)', 'AuthController::resetPassword/$1');
+$routes->post('auth/reset-password/(:alphanum)', 'AuthController::resetPassword/$1');
+
+// Invite acceptance (public)
+$routes->get('invite/(:alphanum)', 'InviteController::accept/$1');
+$routes->post('invite/(:alphanum)', 'InviteController::accept/$1');
+
 // Protected routes
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Dashboard
@@ -64,6 +74,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('settings/add-option', 'SettingsController::addOption');
     $routes->post('settings/delete-option/(:num)', 'SettingsController::deleteOption/$1');
     $routes->post('settings/save-defaults', 'SettingsController::saveDefaults');
+
+    // Invite send (protected — admins + enabled users)
+    $routes->post('invite/send', 'InviteController::send');
 });
 
 // Admin routes
@@ -77,4 +90,16 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
     $routes->post('users/toggle-active/(:num)', 'AdminController::toggleActive/$1');
     $routes->post('defaults/add', 'AdminController::addDefault');
     $routes->post('defaults/delete', 'AdminController::deleteDefault');
+
+    // Email settings
+    $routes->get('email', 'AdminController::emailSettings');
+    $routes->post('email', 'AdminController::saveEmailSettings');
+    $routes->post('email/test', 'AdminController::testEmail');
+    $routes->post('email/save-template/(:alpha)', 'AdminController::saveEmailTemplate/$1');
+
+    // Invite management
+    $routes->get('invites', 'AdminController::invites');
+    $routes->post('invites/send', 'AdminController::sendInvite');
+    $routes->post('invites/set-limit/(:num)', 'AdminController::setUserInviteLimit/$1');
+    $routes->post('invites/revoke/(:num)', 'AdminController::revokeUserInvites/$1');
 });

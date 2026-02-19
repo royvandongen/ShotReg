@@ -54,8 +54,15 @@
                             <li><a class="dropdown-item" href="/admin/users">
                                 <i class="bi bi-people"></i> <?= lang('App.users') ?>
                             </a></li>
+                            <li><a class="dropdown-item" href="/admin/invites">
+                                <i class="bi bi-envelope-plus"></i> <?= lang('Admin.invitesTitle') ?>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/admin/settings">
                                 <i class="bi bi-sliders"></i> <?= lang('App.systemSettings') ?>
+                            </a></li>
+                            <li><a class="dropdown-item" href="/admin/email">
+                                <i class="bi bi-envelope-gear"></i> <?= lang('Admin.emailSettingsTitle') ?>
                             </a></li>
                         </ul>
                     </li>

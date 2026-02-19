@@ -33,6 +33,41 @@
                 <?= lang('Admin.require2faHelp') ?>
             </p>
 
+            <hr>
+            <h6 class="mb-3"><?= lang('Admin.invitesSection') ?></h6>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="invites_enabled"
+                       name="invites_enabled" value="1"
+                       <?= $invitesEnabled === '1' ? 'checked' : '' ?>>
+                <label class="form-check-label" for="invites_enabled">
+                    <?= lang('Admin.enableInvites') ?>
+                </label>
+            </div>
+            <p class="text-muted small mb-4">
+                <?= lang('Admin.enableInvitesHelp') ?>
+            </p>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="user_invites_enabled"
+                       name="user_invites_enabled" value="1"
+                       <?= $userInvitesEnabled === '1' ? 'checked' : '' ?>>
+                <label class="form-check-label" for="user_invites_enabled">
+                    <?= lang('Admin.enableUserInvites') ?>
+                </label>
+            </div>
+            <p class="text-muted small mb-4">
+                <?= lang('Admin.enableUserInvitesHelp') ?>
+            </p>
+
+            <div class="mb-4">
+                <label for="user_invite_limit" class="form-label"><?= lang('Admin.userInviteLimit') ?></label>
+                <input type="number" class="form-control" id="user_invite_limit"
+                       name="user_invite_limit" value="<?= esc($userInviteLimit) ?>"
+                       min="0" style="max-width: 120px;">
+                <div class="form-text"><?= lang('Admin.userInviteLimitHelp') ?></div>
+            </div>
+
             <button type="submit" class="btn btn-primary"><?= lang('Admin.saveSettings') ?></button>
         <?= form_close() ?>
     </div>

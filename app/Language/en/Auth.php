@@ -54,4 +54,16 @@ return [
 
     // Account disabled
     'accountDisabled'       => 'Your account has been disabled. Please contact an administrator.',
+
+    // Forgot / reset password
+    'forgotPassword'        => 'Forgot password?',
+    'forgotPasswordTitle'   => 'Reset Password',
+    'forgotPasswordHelp'    => 'Enter your email address and we\'ll send you a reset link if an account exists.',
+    'sendResetLink'         => 'Send Reset Link',
+    'resetEmailSent'        => 'If that email address is registered, a reset link has been sent. Check your inbox.',
+    'resetPasswordTitle'    => 'Set New Password',
+    'newPassword'           => 'New Password',
+    'setPassword'           => 'Set Password',
+    'passwordResetSuccess'  => 'Password reset successfully. You can now log in.',
+    'invalidResetToken'     => 'This reset link is invalid or has expired. Please request a new one.',
 ];

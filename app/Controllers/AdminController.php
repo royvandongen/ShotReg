@@ -2,9 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Mailer;
 use App\Models\AppSettingModel;
+use App\Models\InviteModel;
 use App\Models\UserModel;
 use App\Models\UserOptionModel;
+use App\Models\UserSettingModel;
 
 class AdminController extends BaseController
 {
@@ -23,6 +26,9 @@ class AdminController extends BaseController
         return view('admin/settings', [
             'registrationEnabled' => $this->settingModel->getValue('registration_enabled', '1'),
             'force2fa'            => $this->settingModel->getValue('force_2fa', '0'),
+            'invitesEnabled'      => $this->settingModel->getValue('invites_enabled', '0'),
+            'userInvitesEnabled'  => $this->settingModel->getValue('user_invites_enabled', '0'),
+            'userInviteLimit'     => $this->settingModel->getValue('user_invite_limit', '5'),
             'defaultLaneTypes'    => $defaultLaneTypes,
             'defaultSightings'    => $defaultSightings,
         ]);
@@ -30,11 +36,13 @@ class AdminController extends BaseController
 
     public function saveSettings()
     {
-        $registrationEnabled = $this->request->getPost('registration_enabled') ? '1' : '0';
-        $force2fa = $this->request->getPost('force_2fa') ? '1' : '0';
+        $this->settingModel->setValue('registration_enabled', $this->request->getPost('registration_enabled') ? '1' : '0');
+        $this->settingModel->setValue('force_2fa',            $this->request->getPost('force_2fa') ? '1' : '0');
+        $this->settingModel->setValue('invites_enabled',      $this->request->getPost('invites_enabled') ? '1' : '0');
+        $this->settingModel->setValue('user_invites_enabled', $this->request->getPost('user_invites_enabled') ? '1' : '0');
 
-        $this->settingModel->setValue('registration_enabled', $registrationEnabled);
-        $this->settingModel->setValue('force_2fa', $force2fa);
+        $limit = max(0, (int) $this->request->getPost('user_invite_limit'));
+        $this->settingModel->setValue('user_invite_limit', (string) $limit);
 
         return redirect()->to('/admin/settings')
                          ->with('success', lang('Admin.settingsSaved'));
@@ -196,5 +204,188 @@ class AdminController extends BaseController
 
         return redirect()->to('/admin/users')
                          ->with('success', $msg);
+    }
+
+    // -------------------------------------------------------------------------
+    // Email Settings
+    // -------------------------------------------------------------------------
+
+    public function emailSettings()
+    {
+        return view('admin/email', [
+            'emailProtocol'   => $this->settingModel->getValue('email_protocol', 'smtp'),
+            'smtpHost'        => $this->settingModel->getValue('smtp_host', ''),
+            'smtpPort'        => $this->settingModel->getValue('smtp_port', '587'),
+            'smtpUser'        => $this->settingModel->getValue('smtp_user', ''),
+            'smtpPass'        => $this->settingModel->getValue('smtp_pass', ''),
+            'smtpCrypto'      => $this->settingModel->getValue('smtp_crypto', 'tls'),
+            'emailFromAddress' => $this->settingModel->getValue('email_from_address', ''),
+            'emailFromName'   => $this->settingModel->getValue('email_from_name', 'Shotr'),
+            'templateInvite'  => $this->settingModel->getValue('email_template_invite', ''),
+            'templateReset'   => $this->settingModel->getValue('email_template_reset', ''),
+        ]);
+    }
+
+    public function saveEmailSettings()
+    {
+        $keys = ['email_protocol', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_crypto', 'email_from_address', 'email_from_name'];
+        $postMap = [
+            'email_protocol'    => 'email_protocol',
+            'smtp_host'         => 'smtp_host',
+            'smtp_port'         => 'smtp_port',
+            'smtp_user'         => 'smtp_user',
+            'smtp_crypto'       => 'smtp_crypto',
+            'email_from_address' => 'email_from_address',
+            'email_from_name'   => 'email_from_name',
+        ];
+
+        foreach ($postMap as $postKey => $settingKey) {
+            $this->settingModel->setValue($settingKey, trim($this->request->getPost($postKey) ?? ''));
+        }
+
+        // Only update password if provided (don't wipe existing)
+        $newPass = $this->request->getPost('smtp_pass');
+        if ($newPass !== '' && $newPass !== null) {
+            $this->settingModel->setValue('smtp_pass', $newPass);
+        }
+
+        return redirect()->to('/admin/email')
+                         ->with('success', lang('Admin.emailSettingsSaved'));
+    }
+
+    public function testEmail()
+    {
+        $adminUser  = (new UserModel())->find((int) session()->get('user_id'));
+        $mailer     = new Mailer();
+
+        if (! $mailer->isConfigured()) {
+            return redirect()->to('/admin/email')
+                             ->with('error', lang('Admin.emailNotConfigured'));
+        }
+
+        $sent = $mailer->sendTest($adminUser['email']);
+
+        return redirect()->to('/admin/email')
+                         ->with($sent ? 'success' : 'error', $sent ? lang('Admin.testEmailSent', [$adminUser['email']]) : lang('Admin.testEmailFailed'));
+    }
+
+    public function saveEmailTemplate(string $type)
+    {
+        $allowed = ['invite', 'reset'];
+        if (! in_array($type, $allowed, true)) {
+            return redirect()->to('/admin/email')->with('error', lang('Admin.invalidInput'));
+        }
+
+        $key  = 'email_template_' . $type;
+        $html = $this->request->getPost('template') ?? '';
+        $this->settingModel->setValue($key, $html);
+
+        return redirect()->to('/admin/email')
+                         ->with('success', lang('Admin.templateSaved'));
+    }
+
+    // -------------------------------------------------------------------------
+    // Invite Management
+    // -------------------------------------------------------------------------
+
+    public function invites()
+    {
+        $inviteModel = new InviteModel();
+        $invites     = $inviteModel->getAllWithSenders();
+
+        // Build per-sender usage summary
+        $senderStats = [];
+        $userSettingModel = new UserSettingModel();
+        foreach ($invites as $inv) {
+            $senderId = $inv['invited_by'];
+            if ($senderId && ! isset($senderStats[$senderId])) {
+                $override = $userSettingModel->getValue((int) $senderId, 'invite_limit_override');
+                $globalLimit = (int) $this->settingModel->getValue('user_invite_limit', '5');
+                $senderStats[$senderId] = [
+                    'override'     => $override,
+                    'global_limit' => $globalLimit,
+                ];
+            }
+        }
+
+        return view('admin/invites', [
+            'invites'     => $invites,
+            'senderStats' => $senderStats,
+        ]);
+    }
+
+    public function sendInvite()
+    {
+        $email = trim($this->request->getPost('invite_email') ?? '');
+
+        if (! $this->validateData(['email' => $email], ['email' => 'required|valid_email'])) {
+            return redirect()->to('/admin/invites')->with('error', lang('Invite.invalidEmail'));
+        }
+
+        $userModel = new UserModel();
+        if ($userModel->where('email', $email)->first()) {
+            return redirect()->to('/admin/invites')->with('error', lang('Invite.emailAlreadyRegistered'));
+        }
+
+        $inviteModel = new InviteModel();
+        $invite      = $inviteModel->createInvite($email, (int) session()->get('user_id'));
+        $baseUrl     = rtrim(config('App')->baseURL, '/');
+        $inviteLink  = $baseUrl . '/invite/' . $invite['token'];
+
+        $mailer    = new Mailer();
+        $emailSent = false;
+        if ($mailer->isConfigured()) {
+            $username  = session()->get('username') ?? 'Admin';
+            $emailSent = $mailer->sendInvite($email, $username, $invite['token']);
+        }
+
+        $msg = $emailSent
+            ? lang('Invite.inviteSentWithEmail', [$email])
+            : lang('Invite.inviteCreated');
+
+        return redirect()->to('/admin/invites')
+                         ->with('success', $msg)
+                         ->with('invite_link', $inviteLink);
+    }
+
+    public function setUserInviteLimit(int $userId)
+    {
+        $userModel = new UserModel();
+        if (! $userModel->find($userId)) {
+            return redirect()->to('/admin/invites')->with('error', lang('Admin.userNotFound'));
+        }
+
+        $limit = $this->request->getPost('invite_limit');
+
+        $userSettingModel = new UserSettingModel();
+        if ($limit === '' || $limit === null) {
+            // Remove override — revert to global limit
+            $existing = $userSettingModel->where('user_id', $userId)
+                                         ->where('setting_key', 'invite_limit_override')
+                                         ->first();
+            if ($existing) {
+                $userSettingModel->delete($existing['id']);
+            }
+        } else {
+            $userSettingModel->setValue($userId, 'invite_limit_override', (string) max(0, (int) $limit));
+        }
+
+        return redirect()->to('/admin/invites')
+                         ->with('success', lang('Admin.inviteLimitUpdated'));
+    }
+
+    public function revokeUserInvites(int $userId)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($userId);
+        if (! $user) {
+            return redirect()->to('/admin/invites')->with('error', lang('Admin.userNotFound'));
+        }
+
+        $inviteModel = new InviteModel();
+        $count = $inviteModel->revokeByUser($userId);
+
+        return redirect()->to('/admin/invites')
+                         ->with('success', lang('Admin.invitesRevoked', [$count, esc($user['username'])]));
     }
 }

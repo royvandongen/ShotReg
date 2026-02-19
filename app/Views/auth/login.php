@@ -28,6 +28,9 @@
             <div class="mb-3">
                 <label for="password" class="form-label"><?= lang('Auth.password') ?></label>
                 <input type="password" class="form-control" id="password" name="password" required>
+                <div class="text-end mt-1">
+                    <a href="/auth/forgot-password" class="small text-muted"><?= lang('Auth.forgotPassword') ?></a>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary w-100"><?= lang('Auth.login') ?></button>
         <?= form_close() ?>
