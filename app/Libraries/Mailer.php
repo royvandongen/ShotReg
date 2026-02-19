@@ -66,9 +66,10 @@ class Mailer
         $template = $this->settings->getValue('email_template_reset') ?: $this->defaultResetTemplate();
 
         $html = $this->renderTemplate($template, [
-            '{site_name}'       => $siteName,
-            '{reset_link}'      => $resetLink,
-            '{expires_minutes}' => '60',
+            '{site_name}'            => $siteName,
+            '{reset_link}'           => $resetLink,
+            '{password_reset_link}'  => $resetLink,
+            '{expires_minutes}'      => '60',
         ]);
 
         return $this->send($toEmail, '', 'Reset your ' . $siteName . ' password', $html);
@@ -139,7 +140,7 @@ class Mailer
         return str_replace(array_keys($replacements), array_values($replacements), $template);
     }
 
-    protected function defaultInviteTemplate(): string
+    public function defaultInviteTemplate(): string
     {
         return <<<HTML
 <!DOCTYPE html>
@@ -158,7 +159,7 @@ class Mailer
 HTML;
     }
 
-    protected function defaultResetTemplate(): string
+    public function defaultResetTemplate(): string
     {
         return <<<HTML
 <!DOCTYPE html>
@@ -167,7 +168,7 @@ HTML;
     <h2>Reset your {site_name} password</h2>
     <p>We received a request to reset the password for your account.</p>
     <p>
-        <a href="{reset_link}" style="display:inline-block;padding:10px 20px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:4px;">
+        <a href="{password_reset_link}" style="display:inline-block;padding:10px 20px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:4px;">
             Reset Password
         </a>
     </p>

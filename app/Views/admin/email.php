@@ -104,7 +104,7 @@
     <div class="card-body">
         <p class="text-muted small">
             <?= lang('Admin.templatePlaceholders') ?>
-            <code>{site_name}</code>, <code>{reset_link}</code>, <code>{expires_minutes}</code>
+            <code>{site_name}</code>, <code>{password_reset_link}</code>, <code>{expires_minutes}</code>
         </p>
         <?= form_open('/admin/email/save-template/reset') ?>
             <textarea name="template" class="form-control font-monospace mb-3"

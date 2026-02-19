@@ -212,17 +212,19 @@ class AdminController extends BaseController
 
     public function emailSettings()
     {
+        $mailer = new Mailer();
+
         return view('admin/email', [
-            'emailProtocol'   => $this->settingModel->getValue('email_protocol', 'smtp'),
-            'smtpHost'        => $this->settingModel->getValue('smtp_host', ''),
-            'smtpPort'        => $this->settingModel->getValue('smtp_port', '587'),
-            'smtpUser'        => $this->settingModel->getValue('smtp_user', ''),
-            'smtpPass'        => $this->settingModel->getValue('smtp_pass', ''),
-            'smtpCrypto'      => $this->settingModel->getValue('smtp_crypto', 'tls'),
+            'emailProtocol'    => $this->settingModel->getValue('email_protocol', 'smtp'),
+            'smtpHost'         => $this->settingModel->getValue('smtp_host', ''),
+            'smtpPort'         => $this->settingModel->getValue('smtp_port', '587'),
+            'smtpUser'         => $this->settingModel->getValue('smtp_user', ''),
+            'smtpPass'         => $this->settingModel->getValue('smtp_pass', ''),
+            'smtpCrypto'       => $this->settingModel->getValue('smtp_crypto', 'tls'),
             'emailFromAddress' => $this->settingModel->getValue('email_from_address', ''),
-            'emailFromName'   => $this->settingModel->getValue('email_from_name', 'Shotr'),
-            'templateInvite'  => $this->settingModel->getValue('email_template_invite', ''),
-            'templateReset'   => $this->settingModel->getValue('email_template_reset', ''),
+            'emailFromName'    => $this->settingModel->getValue('email_from_name', 'Shotr'),
+            'templateInvite'   => $this->settingModel->getValue('email_template_invite') ?: $mailer->defaultInviteTemplate(),
+            'templateReset'    => $this->settingModel->getValue('email_template_reset') ?: $mailer->defaultResetTemplate(),
         ]);
     }
 
