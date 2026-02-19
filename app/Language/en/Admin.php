@@ -106,7 +106,9 @@ return [
     'templateResetTitle'      => 'Password Reset Email Template',
     'templatePlaceholders'    => 'Available placeholders:',
     'saveTemplate'            => 'Save Template',
-    'm365Note'                => 'For Microsoft 365, use host <code>smtp.office365.com</code>, port <code>587</code>, encryption <code>TLS</code>, and your M365 username and app password.',
+    'resetExpiryMinutes'      => 'Password reset link expiry',
+    'minutes'                 => 'min',
+    'm365Note'                => 'For Microsoft 365 / Outlook, use host <code>smtp-mail.outlook.com</code>, port <code>587</code>, encryption <code>TLS</code>, and your email address and password.',
 
     // Invite management page
     'invitesTitle'            => 'Invitations',

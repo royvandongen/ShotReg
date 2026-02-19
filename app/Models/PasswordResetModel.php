@@ -20,10 +20,10 @@ class PasswordResetModel extends Model
     ];
 
     /**
-     * Create a new password reset token valid for 60 minutes.
+     * Create a new password reset token.
      * Invalidates any existing unused tokens for this email first.
      */
-    public function createToken(string $email): string
+    public function createToken(string $email, int $minutes = 60): string
     {
         // Expire any existing unused tokens for this email
         $this->where('email', $email)
@@ -36,7 +36,7 @@ class PasswordResetModel extends Model
         $this->insert([
             'token'      => $token,
             'email'      => $email,
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+60 minutes')),
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+' . $minutes . ' minutes')),
         ]);
 
         return $token;

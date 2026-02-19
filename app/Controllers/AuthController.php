@@ -274,12 +274,15 @@ class AuthController extends BaseController
             $user      = $userModel->where('email', $email)->first();
 
             if ($user && ! empty($user['is_active'])) {
+                $settingModel  = new AppSettingModel();
+                $expiryMinutes = max(1, (int) $settingModel->getValue('password_reset_expiry_minutes', '60'));
+
                 $resetModel = new PasswordResetModel();
-                $token      = $resetModel->createToken($email);
+                $token      = $resetModel->createToken($email, $expiryMinutes);
 
                 $mailer = new Mailer();
                 if ($mailer->isConfigured()) {
-                    $mailer->sendPasswordReset($email, $token);
+                    $mailer->sendPasswordReset($email, $token, $expiryMinutes);
                 }
             }
 

@@ -215,16 +215,17 @@ class AdminController extends BaseController
         $mailer = new Mailer();
 
         return view('admin/email', [
-            'emailProtocol'    => $this->settingModel->getValue('email_protocol', 'smtp'),
-            'smtpHost'         => $this->settingModel->getValue('smtp_host', ''),
-            'smtpPort'         => $this->settingModel->getValue('smtp_port', '587'),
-            'smtpUser'         => $this->settingModel->getValue('smtp_user', ''),
-            'smtpPass'         => $this->settingModel->getValue('smtp_pass', ''),
-            'smtpCrypto'       => $this->settingModel->getValue('smtp_crypto', 'tls'),
-            'emailFromAddress' => $this->settingModel->getValue('email_from_address', ''),
-            'emailFromName'    => $this->settingModel->getValue('email_from_name', 'Shotr'),
-            'templateInvite'   => $this->settingModel->getValue('email_template_invite') ?: $mailer->defaultInviteTemplate(),
-            'templateReset'    => $this->settingModel->getValue('email_template_reset') ?: $mailer->defaultResetTemplate(),
+            'emailProtocol'        => $this->settingModel->getValue('email_protocol', 'smtp'),
+            'smtpHost'             => $this->settingModel->getValue('smtp_host', ''),
+            'smtpPort'             => $this->settingModel->getValue('smtp_port', '587'),
+            'smtpUser'             => $this->settingModel->getValue('smtp_user', ''),
+            'smtpPass'             => $this->settingModel->getValue('smtp_pass', ''),
+            'smtpCrypto'           => $this->settingModel->getValue('smtp_crypto', 'tls'),
+            'emailFromAddress'     => $this->settingModel->getValue('email_from_address', ''),
+            'emailFromName'        => $this->settingModel->getValue('email_from_name', 'Shotr'),
+            'resetExpiryMinutes'   => $this->settingModel->getValue('password_reset_expiry_minutes', '60'),
+            'templateInvite'       => $this->settingModel->getValue('email_template_invite') ?: $mailer->defaultInviteTemplate(),
+            'templateReset'        => $this->settingModel->getValue('email_template_reset') ?: $mailer->defaultResetTemplate(),
         ]);
     }
 
@@ -244,6 +245,9 @@ class AdminController extends BaseController
         foreach ($postMap as $postKey => $settingKey) {
             $this->settingModel->setValue($settingKey, trim($this->request->getPost($postKey) ?? ''));
         }
+
+        $expiry = max(1, (int) $this->request->getPost('password_reset_expiry_minutes'));
+        $this->settingModel->setValue('password_reset_expiry_minutes', (string) $expiry);
 
         // Only update password if provided (don't wipe existing)
         $newPass = $this->request->getPost('smtp_pass');

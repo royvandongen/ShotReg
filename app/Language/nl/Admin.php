@@ -106,7 +106,9 @@ return [
     'templateResetTitle'      => 'Wachtwoordherstel-e-mailsjabloon',
     'templatePlaceholders'    => 'Beschikbare plaatshouders:',
     'saveTemplate'            => 'Sjabloon opslaan',
-    'm365Note'                => 'Voor Microsoft 365, gebruik host <code>smtp.office365.com</code>, poort <code>587</code>, versleuteling <code>TLS</code>, en je M365-gebruikersnaam en app-wachtwoord.',
+    'resetExpiryMinutes'      => 'Vervaltijd wachtwoordherstelkoppeling',
+    'minutes'                 => 'min',
+    'm365Note'                => 'Voor Microsoft 365 / Outlook, gebruik host <code>smtp-mail.outlook.com</code>, poort <code>587</code>, versleuteling <code>TLS</code>, en je e-mailadres en wachtwoord.',
 
     // Invite management page
     'invitesTitle'            => 'Uitnodigingen',

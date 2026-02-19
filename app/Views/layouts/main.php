@@ -62,7 +62,7 @@
                                 <i class="bi bi-sliders"></i> <?= lang('App.systemSettings') ?>
                             </a></li>
                             <li><a class="dropdown-item" href="/admin/email">
-                                <i class="bi bi-envelope-gear"></i> <?= lang('Admin.emailSettingsTitle') ?>
+                                <i class="bi bi-envelope"></i> <?= lang('Admin.emailSettingsTitle') ?>
                             </a></li>
                         </ul>
                     </li>

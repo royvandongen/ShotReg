@@ -57,7 +57,7 @@ class Mailer
     /**
      * Send a password reset email.
      */
-    public function sendPasswordReset(string $toEmail, string $token): bool
+    public function sendPasswordReset(string $toEmail, string $token, int $expiryMinutes = 60): bool
     {
         $baseUrl   = rtrim(config('App')->baseURL, '/');
         $resetLink = $baseUrl . '/auth/reset-password/' . $token;
@@ -69,7 +69,7 @@ class Mailer
             '{site_name}'            => $siteName,
             '{reset_link}'           => $resetLink,
             '{password_reset_link}'  => $resetLink,
-            '{expires_minutes}'      => '60',
+            '{expires_minutes}'      => (string) $expiryMinutes,
         ]);
 
         return $this->send($toEmail, '', 'Reset your ' . $siteName . ' password', $html);

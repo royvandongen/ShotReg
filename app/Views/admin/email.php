@@ -26,7 +26,7 @@
                 <div class="col-md-5">
                     <label for="smtp_host" class="form-label"><?= lang('Admin.smtpHost') ?></label>
                     <input type="text" class="form-control" id="smtp_host" name="smtp_host"
-                           value="<?= esc($smtpHost) ?>" placeholder="smtp.office365.com">
+                           value="<?= esc($smtpHost) ?>" placeholder="smtp-mail.outlook.com">
                 </div>
                 <div class="col-md-2">
                     <label for="smtp_port" class="form-label"><?= lang('Admin.smtpPort') ?></label>
@@ -66,6 +66,20 @@
                     <label for="email_from_name" class="form-label"><?= lang('Admin.emailFromName') ?></label>
                     <input type="text" class="form-control" id="email_from_name" name="email_from_name"
                            value="<?= esc($emailFromName) ?>">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label for="password_reset_expiry_minutes" class="form-label">
+                        <?= lang('Admin.resetExpiryMinutes') ?>
+                    </label>
+                    <div class="input-group" style="max-width: 180px;">
+                        <input type="number" class="form-control" id="password_reset_expiry_minutes"
+                               name="password_reset_expiry_minutes"
+                               value="<?= esc($resetExpiryMinutes) ?>" min="1">
+                        <span class="input-group-text"><?= lang('Admin.minutes') ?></span>
+                    </div>
                 </div>
             </div>
 
