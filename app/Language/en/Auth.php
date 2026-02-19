@@ -58,6 +58,7 @@ return [
     // Remember me / session management
     'rememberMe'            => 'Keep me signed in for 30 days',
     'sessionInvalidated'    => 'Your session has been signed out. Please log in again.',
+    'accessDenied'          => 'Access denied.',
 
     // Forgot / reset password
     'forgotPassword'        => 'Forgot password?',

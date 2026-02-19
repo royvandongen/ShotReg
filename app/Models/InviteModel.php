@@ -57,6 +57,20 @@ class InviteModel extends Model
     }
 
     /**
+     * M7: Atomically claim an invite — sets used_at only if it is still NULL and not expired.
+     * Returns true if the claim succeeded (this process won the race), false otherwise.
+     */
+    public function atomicMarkUsed(int $id): bool
+    {
+        $this->db->query(
+            'UPDATE invites SET used_at = NOW() WHERE id = ? AND used_at IS NULL AND expires_at > NOW()',
+            [$id]
+        );
+
+        return $this->db->affectedRows() > 0;
+    }
+
+    /**
      * Count invites sent by a user (all time, including used/expired).
      */
     public function countByUser(int $userId): int
@@ -105,17 +119,15 @@ class InviteModel extends Model
     }
 
     /**
-     * Revoke all pending invites from a user by marking them expired now.
+     * F23: Revoke all pending invites from a user — hard-deletes them so the tokens
+     * cannot be replayed even if the expiry-time check is bypassed.
      */
     public function revokeByUser(int $userId): int
     {
-        $past = date('Y-m-d H:i:s', strtotime('-1 second'));
-
         $this->where('invited_by', $userId)
              ->where('used_at', null)
              ->where('expires_at >', date('Y-m-d H:i:s'))
-             ->set('expires_at', $past)
-             ->update();
+             ->delete();
 
         return $this->db->affectedRows();
     }

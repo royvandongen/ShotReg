@@ -58,6 +58,7 @@ return [
     // Remember me / session management
     'rememberMe'            => '30 dagen ingelogd blijven',
     'sessionInvalidated'    => 'Je sessie is afgemeld. Log opnieuw in.',
+    'accessDenied'          => 'Toegang geweigerd.',
 
     // Forgot / reset password
     'forgotPassword'        => 'Wachtwoord vergeten?',

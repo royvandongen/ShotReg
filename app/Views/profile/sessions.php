@@ -58,7 +58,7 @@
                             </small>
                         </td>
                         <td class="text-center">
-                            <?= form_open('/profile/sessions/revoke/' . esc($token['selector'])) ?>
+                            <?= form_open('/profile/sessions/revoke/' . (int) $token['id']) ?>
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
                                         title="<?= lang('Profile.signOutDevice') ?>"
                                         onclick="return confirm('<?= lang('Profile.signOutDeviceConfirm') ?>')">

@@ -95,6 +95,7 @@ return [
     'userInviteLimitHelp'     => 'Maximum invitations a regular user may send. Set to 0 for unlimited.',
 
     // Email settings
+    'smtpPassEncryptionError' => 'Cannot save SMTP password: encryption key is not configured. Set encryption.key in your environment.',
     'emailSettingsTitle'      => 'Email Settings',
     'emailSettingsSaved'      => 'Email settings saved.',
     'emailNotConfigured'      => 'Email is not configured. Please set an SMTP host first.',

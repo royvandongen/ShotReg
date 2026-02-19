@@ -103,16 +103,19 @@ class Auth
     public function verifyTotp(string $secret, string $code, ?int $lastTimestamp = null): int|false
     {
         if ($lastTimestamp !== null) {
-            // verifyKeyNewer only accepts codes whose TOTP counter is strictly newer than
-            // the last accepted counter, preventing replay of already-used codes.
-            // Window=1 allows ±1 period (30 s) to account for clock drift.
-            $result = $this->google2fa->verifyKeyNewer($secret, $code, $lastTimestamp, 1);
+            // verifyKeyNewer rejects codes whose counter is NOT strictly greater than the
+            // reference value. Passing ($lastTimestamp - 1) lets the current period's code
+            // be accepted on the very first login after a logout within the same 30-second
+            // window, while still rejecting the previous period's code (true replay attack).
+            $result = $this->google2fa->verifyKeyNewer($secret, $code, $lastTimestamp - 1, 1);
             return $result !== false ? $result : false;
         }
 
-        // First-time use (no previous timestamp stored): allow ±1 period for clock drift.
-        $result = $this->google2fa->verifyKey($secret, $code, 1);
-        return $result ? (int) floor(microtime(true) / 30) : false;
+        // First-time use (no previous timestamp stored): use verifyKeyNewer with -1 so
+        // the returned value is the actual TOTP counter (not a boolean), which is needed
+        // for accurate replay prevention on subsequent logins.
+        $result = $this->google2fa->verifyKeyNewer($secret, $code, -1, 1);
+        return $result !== false ? $result : false;
     }
 
     public function setLoggedIn(array $user): void

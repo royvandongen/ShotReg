@@ -253,11 +253,13 @@ class AdminController extends BaseController
         // Only update password if provided (don't wipe existing)
         $newPass = $this->request->getPost('smtp_pass');
         if ($newPass !== '' && $newPass !== null) {
+            // M5: Fail loudly if the encryption key is not configured — never store plaintext.
             try {
                 $encrypted = base64_encode(service('encrypter')->encrypt($newPass));
-            } catch (\Throwable) {
-                // Encryption key not configured — store as-is (unencrypted)
-                $encrypted = $newPass;
+            } catch (\Throwable $e) {
+                log_message('error', 'SMTP password encryption failed (encryption.key not set?): ' . $e->getMessage());
+                return redirect()->to('/admin/email')
+                                 ->with('error', lang('Admin.smtpPassEncryptionError'));
             }
             $this->settingModel->setValue('smtp_pass', $encrypted);
         }

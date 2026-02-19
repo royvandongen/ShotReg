@@ -84,7 +84,7 @@ class AuthController extends BaseController
             }
 
             if (! $user) {
-                log_message('warning', 'Failed login attempt for user: {username} from IP: {ip}', [
+                log_message('error', 'Failed login attempt for user: {username} from IP: {ip}', [
                     'username' => $this->request->getPost('username'),
                     'ip'       => $this->request->getIPAddress(),
                 ]);
@@ -144,9 +144,21 @@ class AuthController extends BaseController
                 ]);
             }
 
-            $code = str_pad((string) $this->request->getPost('totp_code'), 6, '0', STR_PAD_LEFT);
+            // Validate raw code format before zero-padding (prevents padding bypass)
+            $rawCode = trim((string) ($this->request->getPost('totp_code') ?? ''));
+            if (! preg_match('/^\d{1,6}$/', $rawCode)) {
+                return view('auth/verify2fa', ['error' => lang('Auth.enterValid6Digit')]);
+            }
+            $code = str_pad($rawCode, 6, '0', STR_PAD_LEFT);
+
             $userModel = new UserModel();
             $user = $userModel->find($userId);
+
+            // H5: Guard against user deleted mid-flow
+            if (! $user) {
+                session()->destroy();
+                return redirect()->to('/auth/login');
+            }
 
             $timestamp = $this->auth->verifyTotp(
                 $user['totp_secret'],
@@ -167,8 +179,8 @@ class AuthController extends BaseController
                 $this->auth->setLoggedIn($user);
 
                 if ($pendingSelector) {
-                    // Auto-login via remember-me: mark this device as TOTP-trusted
-                    (new UserTokenModel())->markTotpTrusted($pendingSelector);
+                    // Auto-login via remember-me: mark this device as TOTP-trusted (H1: pass userId)
+                    (new UserTokenModel())->markTotpTrusted($pendingSelector, $userId);
                     session()->set('remember_selector', $pendingSelector);
                 } elseif ($rememberMe) {
                     // Fresh login with "remember me": create a TOTP-trusted token

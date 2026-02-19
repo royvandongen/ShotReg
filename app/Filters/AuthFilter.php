@@ -56,17 +56,8 @@ class AuthFilter implements FilterInterface
             }
         }
 
-        // Normalize current path
-        $currentPath = strtolower(trim($request->getUri()->getPath(), '/'));
-
-        // Exempt paths skip the session-version check and 2FA enforcement
-        $exemptPaths = ['auth/setup2fa', 'auth/logout'];
-        if (in_array($currentPath, $exemptPaths, true)) {
-            session()->remove('redirecting_to_setup2fa');
-            return null;
-        }
-
-        // Session-version check: detect sessions invalidated by force-logout / password reset
+        // M9/F16: Session-version check runs BEFORE the exempt-paths block so that a
+        // force-logged-out user cannot slip through to setup2fa on a stale session.
         $sessionVersion = session()->get('session_version');
         if ($sessionVersion !== null) {
             $dbUser = (new UserModel())->select('session_version, is_active')
@@ -82,6 +73,16 @@ class AuthFilter implements FilterInterface
                 return redirect()->to('/auth/login')
                                  ->with('error', lang('Auth.sessionInvalidated'));
             }
+        }
+
+        // Normalize current path
+        $currentPath = strtolower(trim($request->getUri()->getPath(), '/'));
+
+        // Exempt paths skip the 2FA enforcement check
+        $exemptPaths = ['auth/setup2fa', 'auth/logout'];
+        if (in_array($currentPath, $exemptPaths, true)) {
+            session()->remove('redirecting_to_setup2fa');
+            return null;
         }
 
         // 2FA enforcement

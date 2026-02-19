@@ -98,10 +98,14 @@ class UserTokenModel extends Model
 
     /**
      * Mark a token as TOTP-trusted so the device can skip TOTP on auto-login.
+     * H1: Requires user_id to prevent a caller from trusting another user's token.
      */
-    public function markTotpTrusted(string $selector): void
+    public function markTotpTrusted(string $selector, int $userId): void
     {
-        $this->where('selector', $selector)->set(['totp_trusted' => 1])->update();
+        $this->where('selector', $selector)
+             ->where('user_id', $userId)
+             ->set(['totp_trusted' => 1])
+             ->update();
     }
 
     /**

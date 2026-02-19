@@ -43,8 +43,8 @@ class Mailer
         $template = $this->settings->getValue('email_template_invite') ?: $this->defaultInviteTemplate();
 
         $html = $this->renderTemplate($template, [
-            '{site_name}'    => $siteName,
-            '{inviter_name}' => $inviterName,
+            '{site_name}'    => esc($siteName, 'html'),
+            '{inviter_name}' => esc($inviterName, 'html'), // M6: prevent HTML injection via crafted usernames
             '{invite_link}'  => $inviteLink,
             '{expires_hours}' => '48',
         ]);

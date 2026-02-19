@@ -14,7 +14,7 @@ $routes->get('auth/register', 'AuthController::register');
 $routes->post('auth/register', 'AuthController::register');
 $routes->get('auth/verify2fa', 'AuthController::verify2fa');
 $routes->post('auth/verify2fa', 'AuthController::verify2fa');
-$routes->get('auth/logout', 'AuthController::logout');
+$routes->post('auth/logout', 'AuthController::logout');
 $routes->post('locale/switch', 'LocaleController::change');
 
 // Forgot / reset password (public)
@@ -66,7 +66,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('profile/update', 'ProfileController::update');
     $routes->post('profile/change-password', 'ProfileController::changePassword');
     $routes->get('profile/sessions', 'ProfileController::sessions');
-    $routes->post('profile/sessions/revoke/(:alphanum)', 'ProfileController::revokeSession/$1');
+    $routes->post('profile/sessions/revoke/(:num)', 'ProfileController::revokeSession/$1');
     $routes->post('profile/sessions/revoke-others', 'ProfileController::revokeOtherSessions');
 
     // Settings

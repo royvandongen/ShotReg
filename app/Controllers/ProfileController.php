@@ -116,23 +116,24 @@ class ProfileController extends BaseController
     }
 
     /**
-     * Sign out a single remembered session by selector.
+     * Sign out a single remembered session by token ID.
+     * F17: Uses the numeric DB id instead of the selector to avoid exposing the selector in URLs.
      */
-    public function revokeSession(string $selector)
+    public function revokeSession(int $tokenId)
     {
         $userId     = (int) session()->get('user_id');
         $tokenModel = new UserTokenModel();
 
-        // Verify the token belongs to this user
-        $token = $tokenModel->where('selector', $selector)
+        // Verify the token belongs to this user (ownership check via user_id + id)
+        $token = $tokenModel->where('id', $tokenId)
                             ->where('user_id', $userId)
                             ->first();
 
         if ($token) {
-            $tokenModel->revokeBySelector($selector);
+            $tokenModel->revokeBySelector($token['selector']);
 
             // If revoking the current remember-me session, clear the cookie too
-            if (session()->get('remember_selector') === $selector) {
+            if (session()->get('remember_selector') === $token['selector']) {
                 service('response')->setCookie('remember_me', '', time() - 3600, '', '/', '', false, true, 'Lax');
                 session()->remove('remember_selector');
             }

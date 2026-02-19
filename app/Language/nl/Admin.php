@@ -95,6 +95,7 @@ return [
     'userInviteLimitHelp'     => 'Maximum aantal uitnodigingen dat een reguliere gebruiker mag versturen. Stel 0 in voor onbeperkt.',
 
     // Email settings
+    'smtpPassEncryptionError' => 'SMTP-wachtwoord kan niet worden opgeslagen: de versleutelingssleutel is niet geconfigureerd. Stel encryption.key in je omgeving in.',
     'emailSettingsTitle'      => 'E-mailinstellingen',
     'emailSettingsSaved'      => 'E-mailinstellingen opgeslagen.',
     'emailNotConfigured'      => 'E-mail is niet geconfigureerd. Stel eerst een SMTP-host in.',

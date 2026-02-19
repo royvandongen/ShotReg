@@ -14,6 +14,8 @@
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
+# Set to 'production' in Kubernetes via CI_ENVIRONMENT environment variable.
+# F24: Production mode disables error display and enables security hardening.
 # CI_ENVIRONMENT = production
 
 #--------------------------------------------------------------------
@@ -23,6 +25,11 @@
 # app.baseURL = ''
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
+
+# H4: In production (Kubernetes), set these via environment variables:
+#   CI_ENVIRONMENT = production
+#   app.forceGlobalSecureRequests = true   (redirects HTTP → HTTPS)
+#   cookie.secure = true                   (session and remember_me cookies over HTTPS only)
 # app.forceGlobalSecureRequests = false
 # app.CSPEnabled = false
 
@@ -68,4 +75,7 @@
 # LOGGER
 #--------------------------------------------------------------------
 
+# Threshold 4 = Error and above (Emergency/Alert/Critical/Error).
+# Warning (5), Notice (6), Info (7), Debug (8) require a higher threshold.
+# Security events in this app use log_message('error') to be logged at threshold 4.
 # logger.threshold = 4

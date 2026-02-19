@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $this->renderSection('title') ?> - Shotr</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -112,9 +112,15 @@
                                 <i class="bi bi-devices"></i> <?= lang('Profile.sessionsTitle') ?>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/auth/logout">
-                                <i class="bi bi-box-arrow-right"></i> <?= lang('App.logout') ?>
-                            </a></li>
+                            <li>
+                                <!-- M1: Logout via POST to prevent CSRF-triggered logout via GET link -->
+                                <form method="post" action="/auth/logout" class="d-inline w-100">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right"></i> <?= lang('App.logout') ?>
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -125,14 +131,14 @@
     <div class="container">
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success alert-dismissible fade show">
-                <?= session()->getFlashdata('success') ?>
+                <?= esc(session()->getFlashdata('success')) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show">
-                <?= session()->getFlashdata('error') ?>
+                <?= esc(session()->getFlashdata('error')) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
@@ -148,7 +154,7 @@
     </footer>
     <?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmFgNBBEDqVObFk5sT5cPm7zGJO9" crossorigin="anonymous"></script>
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>

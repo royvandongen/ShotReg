@@ -108,7 +108,13 @@ class InviteController extends BaseController
             $userModel   = new UserModel();
             $optionModel = new UserOptionModel();
 
-            // Check email is still unclaimed (race condition safety)
+            // M7: Atomically claim the invite before inserting the user.
+            // If another concurrent request claimed it first, reject immediately.
+            if (! $this->inviteModel->atomicMarkUsed($invite['id'])) {
+                return view('invite/invalid');
+            }
+
+            // Check email is still unclaimed (guard against re-registration with same invite)
             if ($userModel->where('email', $invite['email'])->first()) {
                 return view('invite/invalid');
             }
@@ -122,7 +128,6 @@ class InviteController extends BaseController
             ]);
 
             $optionModel->seedDefaults($userId);
-            $this->inviteModel->markUsed($invite['id']);
 
             return redirect()->to('/auth/login')
                              ->with('success', lang('Invite.registrationComplete'));
