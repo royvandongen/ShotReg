@@ -92,9 +92,20 @@
             <code>{site_name}</code>, <code>{inviter_name}</code>, <code>{invite_link}</code>, <code>{expires_hours}</code>
         </p>
         <?= form_open('/admin/email/save-template/invite') ?>
-            <textarea name="template" class="form-control font-monospace mb-3"
+            <textarea name="template" id="tpl-invite" class="form-control font-monospace mb-3"
                       rows="16" style="resize: vertical;"><?= esc($templateInvite) ?></textarea>
-            <button type="submit" class="btn btn-primary"><?= lang('Admin.saveTemplate') ?></button>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><?= lang('Admin.saveTemplate') ?></button>
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="previewTemplate('tpl-invite', {
+                            '{site_name}':    'Shotr',
+                            '{inviter_name}': 'Admin',
+                            '{invite_link}':  '#',
+                            '{expires_hours}': '48'
+                        })">
+                    <i class="bi bi-eye"></i> <?= lang('Admin.previewTemplate') ?>
+                </button>
+            </div>
         <?= form_close() ?>
     </div>
 </div>
@@ -107,10 +118,54 @@
             <code>{site_name}</code>, <code>{password_reset_link}</code>, <code>{expires_minutes}</code>
         </p>
         <?= form_open('/admin/email/save-template/reset') ?>
-            <textarea name="template" class="form-control font-monospace mb-3"
+            <textarea name="template" id="tpl-reset" class="form-control font-monospace mb-3"
                       rows="16" style="resize: vertical;"><?= esc($templateReset) ?></textarea>
-            <button type="submit" class="btn btn-primary"><?= lang('Admin.saveTemplate') ?></button>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><?= lang('Admin.saveTemplate') ?></button>
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="previewTemplate('tpl-reset', {
+                            '{site_name}':          'Shotr',
+                            '{reset_link}':         '#',
+                            '{expires_minutes}':    '60'
+                        })">
+                    <i class="bi bi-eye"></i> <?= lang('Admin.previewTemplate') ?>
+                </button>
+            </div>
         <?= form_close() ?>
     </div>
 </div>
+
+<!-- Shared template preview modal -->
+<div class="modal fade" id="tplPreviewModal" tabindex="-1" aria-labelledby="tplPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tplPreviewModalLabel">
+                    <i class="bi bi-eye"></i> <?= lang('Admin.previewTemplate') ?>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="tplPreviewFrame"
+                        style="width:100%;height:620px;border:none;"
+                        sandbox="allow-same-origin"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+function previewTemplate(textareaId, placeholders) {
+    let html = document.getElementById(textareaId).value;
+    for (const [key, value] of Object.entries(placeholders)) {
+        html = html.split(key).join(value);
+    }
+    const frame = document.getElementById('tplPreviewFrame');
+    frame.srcdoc = html;
+    new bootstrap.Modal(document.getElementById('tplPreviewModal')).show();
+}
+</script>
 <?= $this->endSection() ?>

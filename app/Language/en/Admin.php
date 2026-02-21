@@ -156,4 +156,7 @@ return [
     'diskSpaceLow'            => 'Warning: only {0} GB of disk space remaining. ',
     'diskSpaceDetails'        => 'View details',
     'diskSpaceWarning'        => 'Disk space is critically low. Consider freeing up space.',
+
+    // Template preview
+    'previewTemplate'         => 'Preview',
 ];

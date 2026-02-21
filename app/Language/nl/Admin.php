@@ -156,4 +156,7 @@ return [
     'diskSpaceLow'            => 'Waarschuwing: nog slechts {0} GB schijfruimte beschikbaar. ',
     'diskSpaceDetails'        => 'Bekijk details',
     'diskSpaceWarning'        => 'Schijfruimte is kritiek laag. Maak ruimte vrij.',
+
+    // Template preview
+    'previewTemplate'         => 'Voorbeeld',
 ];
