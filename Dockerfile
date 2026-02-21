@@ -19,8 +19,12 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     mysqli \
     gd
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Enable Apache modules
+RUN a2enmod rewrite remoteip
+
+# Configure mod_remoteip: trust X-Forwarded-For from Traefik (10.0.0.0/8)
+COPY docker/remoteip.conf /etc/apache2/conf-available/remoteip.conf
+RUN a2enconf remoteip
 
 # Set DocumentRoot to public/
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
