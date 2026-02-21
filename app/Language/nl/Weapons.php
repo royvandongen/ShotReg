@@ -23,6 +23,12 @@ return [
     'caliberPlaceholder' => 'bijv. 9mm, .22 LR, .308 Win',
     'saveWeapon'     => 'Wapen opslaan',
 
+    // Foto
+    'photo'          => 'Foto',
+    'photoHint'      => 'JPEG, PNG of WebP, max 5 MB',
+    'currentPhoto'   => 'Huidige foto',
+    'removePhoto'    => 'Foto verwijderen',
+
     // Flash messages
     'added'   => 'Wapen toegevoegd aan catalogus.',
     'updated' => 'Wapen bijgewerkt.',

@@ -19,6 +19,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th style="width:72px"></th>
                     <th><?= lang('Weapons.name') ?></th>
                     <th><?= lang('Weapons.type') ?></th>
                     <th><?= lang('Weapons.caliber') ?></th>
@@ -30,6 +31,17 @@
             <tbody>
                 <?php foreach ($weapons as $weapon): ?>
                 <tr>
+                    <td>
+                        <?php if (! empty($weapon['photo'])): ?>
+                            <img src="/weapons/photo/thumb/<?= esc($weapon['photo']) ?>"
+                                 alt="<?= esc($weapon['name']) ?>"
+                                 style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
+                        <?php else: ?>
+                            <span class="text-muted" style="font-size:2rem;line-height:60px;">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        <?php endif; ?>
+                    </td>
                     <td><?= esc($weapon['name']) ?></td>
                     <td><span class="badge bg-secondary"><?= esc(ucfirst($weapon['type'])) ?></span></td>
                     <td><?= esc($weapon['caliber']) ?></td>
@@ -64,8 +76,13 @@
         <?php foreach ($weapons as $weapon): ?>
         <div class="card mb-2">
             <div class="card-body py-2">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
+                <div class="d-flex justify-content-between align-items-center gap-3">
+                    <?php if (! empty($weapon['photo'])): ?>
+                        <img src="/weapons/photo/thumb/<?= esc($weapon['photo']) ?>"
+                             alt="<?= esc($weapon['name']) ?>"
+                             style="width:56px;height:56px;object-fit:cover;border-radius:4px;flex-shrink:0;">
+                    <?php endif; ?>
+                    <div class="flex-grow-1">
                         <strong><?= esc($weapon['name']) ?></strong><br>
                         <small class="text-muted">
                             <?= esc(ucfirst($weapon['type'])) ?> &middot; <?= esc($weapon['caliber']) ?>

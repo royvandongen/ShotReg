@@ -23,6 +23,12 @@ return [
     'caliberPlaceholder' => 'e.g. 9mm, .22 LR, .308 Win',
     'saveWeapon'     => 'Save Weapon',
 
+    // Photo
+    'photo'          => 'Photo',
+    'photoHint'      => 'JPEG, PNG or WebP, max 5 MB',
+    'currentPhoto'   => 'Current photo',
+    'removePhoto'    => 'Remove photo',
+
     // Flash messages
     'added'   => 'Weapon added to catalog.',
     'updated' => 'Weapon updated.',

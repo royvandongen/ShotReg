@@ -20,6 +20,7 @@ class WeaponModel extends Model
         'sighting',
         'ownership',
         'notes',
+        'photo',
     ];
 
     protected $validationRules = [

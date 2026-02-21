@@ -15,7 +15,7 @@
     </div>
 <?php endif; ?>
 
-<?= form_open(($action === 'create') ? 'weapons/create' : 'weapons/edit/' . $id) ?>
+<?= form_open(($action === 'create') ? 'weapons/create' : 'weapons/edit/' . $id, ['enctype' => 'multipart/form-data']) ?>
 
     <div class="mb-3">
         <label for="name" class="form-label"><?= lang('Weapons.nameModel') ?></label>
@@ -73,6 +73,26 @@
         <label for="notes" class="form-label"><?= lang('App.notes') ?></label>
         <textarea class="form-control" id="notes" name="notes"
                   rows="2"><?= esc($weapon['notes'] ?? '') ?></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><?= lang('Weapons.photo') ?></label>
+        <?php if (! empty($weapon['photo'])): ?>
+            <div class="mb-2 d-flex align-items-center gap-3">
+                <img src="/weapons/photo/thumb/<?= esc($weapon['photo']) ?>"
+                     alt="<?= lang('Weapons.currentPhoto') ?>"
+                     style="width:80px;height:80px;object-fit:cover;border-radius:6px;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remove_photo" id="remove_photo" value="1">
+                    <label class="form-check-label text-danger" for="remove_photo">
+                        <?= lang('Weapons.removePhoto') ?>
+                    </label>
+                </div>
+            </div>
+        <?php endif; ?>
+        <input type="file" class="form-control" name="weapon_photo" id="weapon_photo"
+               accept="image/jpeg,image/png,image/webp">
+        <div class="form-text"><?= lang('Weapons.photoHint') ?></div>
     </div>
 
     <button type="submit" class="btn btn-primary">

@@ -57,9 +57,13 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('sessions/reorder-photos', 'SessionController::reorderPhotos');
     $routes->post('sessions/ajax-create-location', 'SessionController::ajaxCreateLocation');
 
-    // Photo serving
+    // Photo serving (sessions)
     $routes->get('photos/(:segment)', 'PhotoController::show/$1');
     $routes->get('photos/thumb/(:segment)', 'PhotoController::thumbnail/$1');
+
+    // Photo serving (weapons)
+    $routes->get('weapons/photo/(:segment)', 'PhotoController::weaponPhoto/$1');
+    $routes->get('weapons/photo/thumb/(:segment)', 'PhotoController::weaponThumbnail/$1');
 
     // Profile
     $routes->get('profile', 'ProfileController::index');
