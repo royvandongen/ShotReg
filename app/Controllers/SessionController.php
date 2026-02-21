@@ -80,7 +80,7 @@ class SessionController extends BaseController
             $sessionId = $this->sessionModel->insert($data);
             $this->handlePhotoUploads($sessionId);
 
-            return redirect()->to('/sessions')
+            return redirect()->to('/sessions/' . $sessionId)
                              ->with('success', lang('Sessions.recorded'));
         }
 

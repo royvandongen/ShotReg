@@ -90,7 +90,7 @@
     <div class="mb-3">
         <label for="photos" class="form-label"><?= lang('Sessions.photos') ?></label>
         <input type="file" class="form-control" id="photos" name="photos[]"
-               multiple accept="image/*" capture="environment">
+               multiple accept="image/*">
         <div class="form-text"><?= lang('Sessions.photosHelp') ?></div>
     </div>
 
