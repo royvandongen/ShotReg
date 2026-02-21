@@ -52,6 +52,20 @@ return [
     'sessionExpiredRescan'  => 'Session expired. Please scan the QR code again and enter the new code.',
     '2faRequired'           => 'Two-factor authentication is required. Please set it up to continue.',
 
+    // 2FA Management
+    'manage2faTitle'        => 'Two-Factor Authentication',
+    '2faAlreadyEnabled'     => 'Two-factor authentication is already active on your account.',
+    'disable2fa'            => 'Disable 2FA',
+    'reset2fa'              => 'Reset 2FA',
+    'disable2faConfirm'     => 'Are you sure you want to disable 2FA? Your account will be less secure.',
+    'reset2faConfirm'       => 'Are you sure you want to reset 2FA? You will need to set it up again with a new code.',
+    '2faDisabled'           => 'Two-factor authentication has been disabled.',
+    '2faReset'              => 'Two-factor authentication has been reset. Please set it up again.',
+    '2faActive'             => '2FA is active',
+    '2faNotActive'          => '2FA is not enabled',
+    '2faNotEnabledProfile'  => 'Add an extra layer of security to your account by enabling two-factor authentication.',
+    'manage2fa'             => 'Manage 2FA',
+
     // Account disabled
     'accountDisabled'       => 'Your account has been disabled. Please contact an administrator.',
 

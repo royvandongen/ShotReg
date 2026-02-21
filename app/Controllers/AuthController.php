@@ -257,6 +257,12 @@ class AuthController extends BaseController
                              ->with('error', lang('Auth.userNotFound'));
         }
 
+        // User already has 2FA configured — show the management page instead
+        if ($user['totp_enabled']) {
+            session()->remove('redirecting_to_setup2fa');
+            return view('auth/manage2fa');
+        }
+
         if ($this->request->getMethod() === 'POST') {
             $secret    = session()->get('pending_totp_secret');
             $secretAge = time() - (int) session()->get('pending_totp_secret_generated_at');
@@ -418,6 +424,48 @@ class AuthController extends BaseController
         }
 
         return view('auth/reset_password', ['token' => $token]);
+    }
+
+    public function disable2fa()
+    {
+        $userId = session()->get('user_id');
+        if (! $userId) {
+            return redirect()->to('/auth/login');
+        }
+
+        $userModel = new UserModel();
+        $userModel->update($userId, [
+            'totp_enabled'         => 0,
+            'totp_secret'          => null,
+            'totp_last_timestamp'  => null,
+        ]);
+
+        session()->set('totp_enabled', false);
+
+        return redirect()->to('/profile')
+                         ->with('success', lang('Auth.2faDisabled'));
+    }
+
+    public function reset2fa()
+    {
+        $userId = session()->get('user_id');
+        if (! $userId) {
+            return redirect()->to('/auth/login');
+        }
+
+        $userModel = new UserModel();
+        $userModel->update($userId, [
+            'totp_enabled'         => 0,
+            'totp_secret'          => null,
+            'totp_last_timestamp'  => null,
+        ]);
+
+        session()->set('totp_enabled', false);
+        session()->remove('pending_totp_secret');
+        session()->remove('pending_totp_secret_generated_at');
+
+        return redirect()->to('/auth/setup2fa')
+                         ->with('success', lang('Auth.2faReset'));
     }
 
     public function logout()

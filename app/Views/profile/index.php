@@ -16,6 +16,28 @@
 <div class="row g-4">
     <div class="col-md-6">
         <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <strong><?= lang('Auth.manage2faTitle') ?></strong>
+                <?php if (! empty($user['totp_enabled'])): ?>
+                    <span class="badge bg-success"><i class="bi bi-shield-fill-check me-1"></i><?= lang('Auth.2faActive') ?></span>
+                <?php else: ?>
+                    <span class="badge bg-secondary"><i class="bi bi-shield me-1"></i><?= lang('Auth.2faNotActive') ?></span>
+                <?php endif; ?>
+            </div>
+            <div class="card-body">
+                <?php if (! empty($user['totp_enabled'])): ?>
+                    <p class="text-muted mb-3"><?= lang('Auth.2faAlreadyEnabled') ?></p>
+                    <a href="/auth/setup2fa" class="btn btn-outline-secondary btn-sm"><?= lang('Auth.manage2fa') ?></a>
+                <?php else: ?>
+                    <p class="text-muted mb-3"><?= lang('Auth.2faNotEnabledProfile') ?></p>
+                    <a href="/auth/setup2fa" class="btn btn-primary btn-sm"><?= lang('Auth.setup2fa') ?></a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
             <div class="card-header"><strong><?= lang('Profile.accountDetails') ?></strong></div>
             <div class="card-body">
                 <?= form_open('/profile/update') ?>

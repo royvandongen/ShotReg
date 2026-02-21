@@ -32,9 +32,11 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Dashboard
     $routes->get('dashboard', 'DashboardController::index');
 
-    // 2FA setup
+    // 2FA setup and management
     $routes->get('auth/setup2fa', 'AuthController::setup2fa');
     $routes->post('auth/setup2fa', 'AuthController::setup2fa');
+    $routes->post('auth/disable2fa', 'AuthController::disable2fa');
+    $routes->post('auth/reset2fa', 'AuthController::reset2fa');
 
     // Weapons catalog
     $routes->get('weapons', 'WeaponController::index');
