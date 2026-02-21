@@ -41,6 +41,52 @@
 </div>
 <?php endif; ?>
 
+<?php
+    $__anyPermIssue = false;
+    foreach ($writableDirs as $__d) {
+        if (!$__d['exists'] || !$__d['readable'] || !$__d['writable']) {
+            $__anyPermIssue = true;
+            break;
+        }
+    }
+?>
+<div class="card mb-4">
+    <div class="card-header"><strong><i class="bi bi-folder-check"></i> <?= lang('Admin.writablePerms') ?></strong></div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th><?= lang('Admin.writablePath') ?></th>
+                    <th class="text-center"><?= lang('Admin.writableExists') ?></th>
+                    <th class="text-center"><?= lang('Admin.writableReadable') ?></th>
+                    <th class="text-center"><?= lang('Admin.writableWritable') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($writableDirs as $__d): ?>
+                <tr class="<?= (!$__d['exists'] || !$__d['readable'] || !$__d['writable']) ? 'table-danger' : '' ?>">
+                    <td class="font-monospace small"><?= esc($__d['path']) ?></td>
+                    <td class="text-center"><?= $__d['exists']   ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle-fill text-danger"></i>' ?></td>
+                    <td class="text-center"><?= $__d['readable'] ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle-fill text-danger"></i>' ?></td>
+                    <td class="text-center"><?= $__d['writable'] ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle-fill text-danger"></i>' ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($__anyPermIssue): ?>
+        <p class="text-danger small m-3 mb-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <?= lang('Admin.writablePermsWarning') ?>
+        </p>
+        <?php else: ?>
+        <p class="text-success small m-3 mb-2">
+            <i class="bi bi-check-circle-fill"></i>
+            <?= lang('Admin.writablePermsOk') ?>
+        </p>
+        <?php endif; ?>
+    </div>
+</div>
+
 <div class="card mb-4">
     <div class="card-header"><strong><?= lang('Admin.general') ?></strong></div>
     <div class="card-body">

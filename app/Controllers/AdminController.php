@@ -28,6 +28,23 @@ class AdminController extends BaseController
         $diskFree  = disk_free_space(WRITEPATH);
         $diskTotal = disk_total_space(WRITEPATH);
 
+        $writableDirs = [];
+        foreach ([
+            WRITEPATH,
+            WRITEPATH . 'uploads',
+            WRITEPATH . 'uploads/photos',
+            WRITEPATH . 'uploads/thumbnails',
+            WRITEPATH . 'uploads/weapon_photos',
+            WRITEPATH . 'uploads/weapon_thumbnails',
+        ] as $dir) {
+            $writableDirs[] = [
+                'path'     => $dir,
+                'exists'   => is_dir($dir),
+                'readable' => is_readable($dir),
+                'writable' => is_writable($dir),
+            ];
+        }
+
         return view('admin/settings', [
             'registrationEnabled'  => $this->settingModel->getValue('registration_enabled', '1'),
             'force2fa'             => $this->settingModel->getValue('force_2fa', '0'),
@@ -39,6 +56,7 @@ class AdminController extends BaseController
             'defaultSightings'     => $defaultSightings,
             'diskFree'             => $diskFree !== false ? $diskFree : null,
             'diskTotal'            => $diskTotal !== false ? $diskTotal : null,
+            'writableDirs'         => $writableDirs,
         ]);
     }
 

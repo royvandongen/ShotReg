@@ -148,6 +148,15 @@ return [
     'inviteUsed'              => 'used',
     'inviteOf'                => 'of',
 
+    // Writable folder permissions
+    'writablePerms'           => 'Upload Folder Permissions',
+    'writablePermsOk'         => 'All upload directories are accessible.',
+    'writablePermsWarning'    => 'Some upload directories have permission issues. Photo uploads may not work correctly.',
+    'writablePath'            => 'Path',
+    'writableExists'          => 'Exists',
+    'writableReadable'        => 'Readable',
+    'writableWritable'        => 'Writable',
+
     // Disk space
     'diskSpace'               => 'Disk Space',
     'diskUsed'                => 'Used',
