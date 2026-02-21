@@ -159,4 +159,10 @@ return [
 
     // Template preview
     'previewTemplate'         => 'Preview',
+
+    // Per-user invite limit (users page)
+    'setInviteLimit'          => 'Set invite limit',
+    'inviteLimitPlaceholder'  => 'Leave empty for global default',
+    'inviteLimitHint'         => 'Leave empty to use the global default. Set to 0 for unlimited.',
+    'inviteLimitGlobal'       => 'global default: {0}',
 ];

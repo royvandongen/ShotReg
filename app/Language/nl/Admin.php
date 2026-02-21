@@ -159,4 +159,10 @@ return [
 
     // Template preview
     'previewTemplate'         => 'Voorbeeld',
+
+    // Per-user invite limit (users page)
+    'setInviteLimit'          => 'Uitnodigingslimiet instellen',
+    'inviteLimitPlaceholder'  => 'Leeg laten voor globale standaard',
+    'inviteLimitHint'         => 'Leeg laten voor globale standaard. Stel 0 in voor onbeperkt.',
+    'inviteLimitGlobal'       => 'globale standaard: {0}',
 ];

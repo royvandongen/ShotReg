@@ -185,6 +185,16 @@
                                 </button>
                             <?= form_close() ?>
                         <?php endif; ?>
+                        <?php if ($invitesEnabled === '1' && (int) $user['id'] !== (int) session()->get('user_id') && ! empty($user['is_approved'])): ?>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    title="<?= lang('Admin.setInviteLimit') ?>"
+                                    data-bs-toggle="modal" data-bs-target="#inviteLimitModal"
+                                    data-user-id="<?= $user['id'] ?>"
+                                    data-username="<?= esc($user['username']) ?>"
+                                    data-current-limit="<?= isset($inviteLimits[(int)$user['id']]) ? esc($inviteLimits[(int)$user['id']]) : '' ?>">
+                                <i class="bi bi-envelope-plus"></i>
+                            </button>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -193,4 +203,63 @@
         </table>
     </div>
 </div>
+
+<?php if ($invitesEnabled === '1'): ?>
+<!-- Invite limit modal -->
+<div class="modal fade" id="inviteLimitModal" tabindex="-1" aria-labelledby="inviteLimitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inviteLimitModalLabel">
+                    <i class="bi bi-envelope-plus"></i> <?= lang('Admin.setInviteLimit') ?>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="inviteLimitForm" method="post" action="">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <p class="mb-3"><strong id="inviteLimitUsername"></strong></p>
+                    <label for="inviteLimitInput" class="form-label">
+                        <?= lang('Admin.userInviteLimit') ?>
+                        <small class="text-muted" id="inviteLimitGlobalNote"></small>
+                    </label>
+                    <input type="number" name="invite_limit" id="inviteLimitInput"
+                           class="form-control" min="0"
+                           placeholder="<?= lang('Admin.inviteLimitPlaceholder') ?>">
+                    <div class="form-text"><?= lang('Admin.inviteLimitHint') ?></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <?= lang('App.cancel') ?>
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <?= lang('Admin.setLimit') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <?= $this->endSection() ?>
+
+<?php if ($invitesEnabled === '1'): ?>
+<?= $this->section('scripts') ?>
+<script>
+document.getElementById('inviteLimitModal').addEventListener('show.bs.modal', function (e) {
+    const btn = e.relatedTarget;
+    const userId       = btn.getAttribute('data-user-id');
+    const username     = btn.getAttribute('data-username');
+    const currentLimit = btn.getAttribute('data-current-limit');
+    const globalLimit  = '<?= esc($globalInviteLimit) ?>';
+
+    document.getElementById('inviteLimitUsername').textContent = username;
+    document.getElementById('inviteLimitInput').value = currentLimit;
+    document.getElementById('inviteLimitGlobalNote').textContent =
+        '(<?= lang('Admin.inviteLimitGlobal', ['{g}']) ?>)'.replace('{g}', globalLimit);
+    document.getElementById('inviteLimitForm').action = '/admin/invites/set-limit/' + userId;
+});
+</script>
+<?= $this->endSection() ?>
+<?php endif; ?>

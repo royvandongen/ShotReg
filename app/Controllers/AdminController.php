@@ -119,9 +119,25 @@ class AdminController extends BaseController
             ->get()
             ->getResultArray();
 
+        // Fetch per-user invite limit overrides in one query
+        $inviteLimits = [];
+        $userIds = array_column($users, 'id');
+        if (! empty($userIds)) {
+            $limitRows = $db->table('user_settings')
+                ->whereIn('user_id', $userIds)
+                ->where('setting_key', 'invite_limit_override')
+                ->get()->getResultArray();
+            foreach ($limitRows as $row) {
+                $inviteLimits[(int) $row['user_id']] = $row['setting_value'];
+            }
+        }
+
         return view('admin/users', [
-            'users'  => $users,
-            'search' => $search,
+            'users'             => $users,
+            'search'            => $search,
+            'invitesEnabled'    => $this->settingModel->getValue('invites_enabled', '0'),
+            'globalInviteLimit' => $this->settingModel->getValue('user_invite_limit', '5'),
+            'inviteLimits'      => $inviteLimits,
         ]);
     }
 
