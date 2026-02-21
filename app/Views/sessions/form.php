@@ -106,13 +106,11 @@
                              style="cursor: grab;">
                         <span class="badge bg-dark position-absolute top-0 start-0 photo-order"><?= ((int)$photo['sort_order']) + 1 ?></span>
                     </div>
-                    <form method="post" action="/sessions/delete-photo/<?= $photo['id'] ?>">
-                        <?= csrf_field() ?>
-                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                onclick="return confirm('<?= lang('Sessions.removePhoto') ?>')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            data-delete-url="/sessions/delete-photo/<?= $photo['id'] ?>"
+                            onclick="deletePhoto(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -241,6 +239,28 @@ function refreshFormCsrf(newToken) {
     if (hidden) {
         hidden.value = csrfValue;
     }
+}
+
+// Photo deletion via AJAX (avoids nested-form HTML issues)
+function deletePhoto(btn) {
+    if (!confirm('<?= lang('Sessions.removePhoto') ?>')) return;
+
+    var url = btn.dataset.deleteUrl;
+    var csrf = getCsrfToken();
+    var data = new FormData();
+    data.append(csrf.name, csrf.value);
+
+    fetch(url, {
+        method: 'POST',
+        body: data,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function(r) { return r.json(); })
+      .then(function(result) {
+          refreshFormCsrf(result.csrf_token);
+          // Remove the photo tile from the DOM
+          var tile = btn.closest('.sortable-item');
+          if (tile) tile.remove();
+      });
 }
 
 // Drag-and-drop photo reordering

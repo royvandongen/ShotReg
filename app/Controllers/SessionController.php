@@ -186,6 +186,11 @@ class SessionController extends BaseController
                 $this->photoModel->delete($photoId);
             }
         }
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'csrf_token' => csrf_hash()]);
+        }
+
         return redirect()->back()->with('success', lang('Sessions.photoRemoved'));
     }
 
