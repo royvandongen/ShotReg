@@ -100,5 +100,18 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><strong><?= lang('Profile.exportData') ?></strong></div>
+            <div class="card-body">
+                <p class="text-muted mb-3"><?= lang('Profile.exportDataDesc') ?></p>
+                <a href="/profile/export" class="btn btn-outline-primary">
+                    <i class="bi bi-download me-1"></i>
+                    <?= lang('Profile.exportBtn') ?>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 <?= $this->endSection() ?>

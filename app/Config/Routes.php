@@ -69,6 +69,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 
     // Profile
     $routes->get('profile', 'ProfileController::index');
+    $routes->get('profile/export', 'ProfileController::exportData');
     $routes->post('profile/update', 'ProfileController::update');
     $routes->post('profile/change-password', 'ProfileController::changePassword');
     $routes->get('profile/sessions', 'ProfileController::sessions');

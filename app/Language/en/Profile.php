@@ -24,6 +24,12 @@ return [
     'passwordChangedSignedOut'   => 'Password changed. All sessions have been signed out for security. Please log in again.',
     'wrongPassword'              => 'Current password is incorrect.',
 
+    // Export
+    'exportData'    => 'Export My Data',
+    'exportDataDesc' => 'Download all your sessions, weapons, photos, and settings as a ZIP archive.',
+    'exportBtn'     => 'Download Export',
+    'exportFailed'  => 'Failed to create export archive. Please try again.',
+
     // Sessions
     'sessionsTitle'              => 'Active Sessions',
     'sessionsHelp'               => 'These are the devices currently signed in via "Keep me signed in". Sign out individual sessions or all others at once.',
