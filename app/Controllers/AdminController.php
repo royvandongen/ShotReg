@@ -25,6 +25,9 @@ class AdminController extends BaseController
         $defaultLaneTypes = json_decode($this->settingModel->getValue('default_lane_types', '[]'), true) ?: [];
         $defaultSightings = json_decode($this->settingModel->getValue('default_sightings', '[]'), true) ?: [];
 
+        $diskFree  = disk_free_space(WRITEPATH);
+        $diskTotal = disk_total_space(WRITEPATH);
+
         return view('admin/settings', [
             'registrationEnabled'  => $this->settingModel->getValue('registration_enabled', '1'),
             'force2fa'             => $this->settingModel->getValue('force_2fa', '0'),
@@ -34,6 +37,8 @@ class AdminController extends BaseController
             'resetExpiryMinutes'   => $this->settingModel->getValue('password_reset_expiry_minutes', '60'),
             'defaultLaneTypes'     => $defaultLaneTypes,
             'defaultSightings'     => $defaultSightings,
+            'diskFree'             => $diskFree !== false ? $diskFree : null,
+            'diskTotal'            => $diskTotal !== false ? $diskTotal : null,
         ]);
     }
 

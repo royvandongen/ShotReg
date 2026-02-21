@@ -129,6 +129,21 @@
     </nav>
 
     <div class="container">
+        <?php if (session()->get('is_admin')): ?>
+        <?php
+            $__df = disk_free_space(WRITEPATH);
+            $__dt = disk_total_space(WRITEPATH);
+            if ($__df !== false && $__dt > 0 && ($__df / $__dt) < 0.10):
+        ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <?= lang('Admin.diskSpaceLow', [round($__df / 1073741824, 1)]) ?>
+            <a href="/admin/settings" class="alert-link"><?= lang('Admin.diskSpaceDetails') ?></a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
+
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success alert-dismissible fade show">
                 <?= esc(session()->getFlashdata('success')) ?>

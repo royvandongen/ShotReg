@@ -147,4 +147,13 @@ return [
     'unlimited'               => 'unlimited',
     'inviteUsed'              => 'used',
     'inviteOf'                => 'of',
+
+    // Disk space
+    'diskSpace'               => 'Disk Space',
+    'diskUsed'                => 'Used',
+    'diskFree'                => 'Free',
+    'diskOf'                  => 'of',
+    'diskSpaceLow'            => 'Warning: only {0} GB of disk space remaining. ',
+    'diskSpaceDetails'        => 'View details',
+    'diskSpaceWarning'        => 'Disk space is critically low. Consider freeing up space.',
 ];

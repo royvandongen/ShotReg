@@ -147,4 +147,13 @@ return [
     'unlimited'               => 'onbeperkt',
     'inviteUsed'              => 'gebruikt',
     'inviteOf'                => 'van',
+
+    // Disk space
+    'diskSpace'               => 'Schijfruimte',
+    'diskUsed'                => 'Gebruikt',
+    'diskFree'                => 'Vrij',
+    'diskOf'                  => 'van',
+    'diskSpaceLow'            => 'Waarschuwing: nog slechts {0} GB schijfruimte beschikbaar. ',
+    'diskSpaceDetails'        => 'Bekijk details',
+    'diskSpaceWarning'        => 'Schijfruimte is kritiek laag. Maak ruimte vrij.',
 ];

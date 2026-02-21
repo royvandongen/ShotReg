@@ -5,6 +5,42 @@
 <?= $this->section('content') ?>
 <h3 class="mb-4"><?= lang('Admin.systemSettings') ?></h3>
 
+<?php if ($diskTotal !== null && $diskFree !== null): ?>
+<?php
+    $__diskUsed     = $diskTotal - $diskFree;
+    $__diskPct      = round(($__diskUsed / $diskTotal) * 100, 1);
+    $__diskBarClass = $__diskPct >= 90 ? 'bg-danger' : ($__diskPct >= 75 ? 'bg-warning' : 'bg-success');
+    $__freeGb       = round($diskFree  / 1073741824, 1);
+    $__totalGb      = round($diskTotal / 1073741824, 1);
+    $__usedGb       = round($__diskUsed / 1073741824, 1);
+?>
+<div class="card mb-4">
+    <div class="card-header"><strong><i class="bi bi-hdd"></i> <?= lang('Admin.diskSpace') ?></strong></div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2 small">
+            <span><?= lang('Admin.diskUsed') ?>: <strong><?= $__usedGb ?> GB</strong></span>
+            <span><?= lang('Admin.diskFree') ?>: <strong><?= $__freeGb ?> GB</strong> <?= lang('Admin.diskOf') ?> <?= $__totalGb ?> GB</span>
+        </div>
+        <div class="progress" style="height:22px;">
+            <div class="progress-bar <?= $__diskBarClass ?>"
+                 role="progressbar"
+                 style="width:<?= $__diskPct ?>%"
+                 aria-valuenow="<?= $__diskPct ?>"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                <?= $__diskPct ?>%
+            </div>
+        </div>
+        <?php if ($__diskPct >= 90): ?>
+        <p class="text-danger small mt-2 mb-0">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <?= lang('Admin.diskSpaceWarning') ?>
+        </p>
+        <?php endif; ?>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="card mb-4">
     <div class="card-header"><strong><?= lang('Admin.general') ?></strong></div>
     <div class="card-body">
