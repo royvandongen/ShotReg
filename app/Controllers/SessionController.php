@@ -255,6 +255,11 @@ class SessionController extends BaseController
             return;
         }
 
+        $photoDir = WRITEPATH . 'uploads/photos/';
+        $thumbDir = WRITEPATH . 'uploads/thumbnails/';
+        mkdir($photoDir, 0755, true);
+        mkdir($thumbDir, 0755, true);
+
         // Get current max sort_order for this session
         $existing = $this->photoModel->getForSession($sessionId);
         $nextOrder = count($existing);
@@ -268,23 +273,30 @@ class SessionController extends BaseController
                 continue;
             }
 
-            $newName = $file->getRandomName();
-            $file->move(WRITEPATH . 'uploads/photos', $newName);
+            try {
+                $newName = $file->getRandomName();
+                $file->move($photoDir, $newName);
 
-            $thumbName = 'thumb_' . $newName;
-            service('image')
-                ->withFile(WRITEPATH . 'uploads/photos/' . $newName)
-                ->fit(300, 300, 'center')
-                ->save(WRITEPATH . 'uploads/thumbnails/' . $thumbName, 80);
+                $thumbName = 'thumb_' . $newName;
+                service('image')
+                    ->withFile($photoDir . $newName)
+                    ->fit(300, 300, 'center')
+                    ->save($thumbDir . $thumbName, 80);
 
-            $this->photoModel->insert([
-                'shooting_session_id' => $sessionId,
-                'filename'            => $newName,
-                'original_name'       => $file->getClientName(),
-                'thumbnail'           => $thumbName,
-                'file_size'           => $file->getSize(),
-                'sort_order'          => $nextOrder++,
-            ]);
+                $this->photoModel->insert([
+                    'shooting_session_id' => $sessionId,
+                    'filename'            => $newName,
+                    'original_name'       => $file->getClientName(),
+                    'thumbnail'           => $thumbName,
+                    'file_size'           => $file->getSize(),
+                    'sort_order'          => $nextOrder++,
+                ]);
+            } catch (\Throwable $e) {
+                log_message('error', 'Photo upload failed for session {session}: {message}', [
+                    'session' => $sessionId,
+                    'message' => $e->getMessage(),
+                ]);
+            }
         }
     }
 

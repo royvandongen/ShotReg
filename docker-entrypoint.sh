@@ -63,6 +63,14 @@ if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_EMAIL" ] && [ -n "$ADMIN_PASSWORD" ]
     php spark admin:create
 fi
 
+# Ensure upload subdirectories exist on the PVC mount
+# (The Docker image creates them during build, but a PVC mounted at
+# writable/uploads/ is empty on first run, so we recreate them here.)
+mkdir -p /var/www/html/writable/uploads/photos \
+         /var/www/html/writable/uploads/thumbnails \
+         /var/www/html/writable/uploads/weapon_photos \
+         /var/www/html/writable/uploads/weapon_thumbnails
+
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/writable
 
