@@ -102,6 +102,15 @@ class Auth
 
     public function verifyTotp(string $secret, string $code, ?int $lastTimestamp = null): int|false
     {
+        // The original app stored time() (a Unix timestamp, ~1.74 billion) instead of the
+        // TOTP counter (floor(time/30), ~58 million). Values above 1 billion cannot be
+        // valid TOTP counters for centuries, so treat them as "no previous timestamp" to
+        // recover affected accounts while still allowing the correct counter to be stored
+        // on a successful verification.
+        if ($lastTimestamp !== null && $lastTimestamp > 1_000_000_000) {
+            $lastTimestamp = null;
+        }
+
         if ($lastTimestamp !== null) {
             // verifyKeyNewer rejects codes whose counter is NOT strictly greater than the
             // reference value. Passing ($lastTimestamp - 1) lets the current period's code
