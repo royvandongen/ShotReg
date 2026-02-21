@@ -257,8 +257,12 @@ class SessionController extends BaseController
 
         $photoDir = WRITEPATH . 'uploads/photos/';
         $thumbDir = WRITEPATH . 'uploads/thumbnails/';
-        mkdir($photoDir, 0755, true);
-        mkdir($thumbDir, 0755, true);
+        if (! is_dir($photoDir)) {
+            mkdir($photoDir, 0755, true);
+        }
+        if (! is_dir($thumbDir)) {
+            mkdir($thumbDir, 0755, true);
+        }
 
         // Get current max sort_order for this session
         $existing = $this->photoModel->getForSession($sessionId);
