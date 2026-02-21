@@ -26,6 +26,9 @@ RUN a2enmod rewrite remoteip
 COPY docker/remoteip.conf /etc/apache2/conf-available/remoteip.conf
 RUN a2enconf remoteip
 
+# Raise PHP upload limits (default 8M is too small for photo uploads)
+COPY docker/php-uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Set DocumentRoot to public/
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
