@@ -1,4 +1,15 @@
-FROM php:8.3-apache
+# Pinned to the PHP2Shell fix (CVE-2026-109618/109619, 21 Oct 2026) —
+# exact version + multi-arch index digest, so a rebuild can never
+# silently resolve to an unpatched or different image. Re-resolve with:
+#   docker buildx imagetools inspect php:8.2.35-apache-trixie
+FROM php:8.2.35-apache-trixie@sha256:fa8966fbaaa06981e549e7a33eb8a68f4cf677d6a82e1d6350adc5d85fe8f740
+
+# Fail the build outright if the base ever resolves to an unpatched PHP.
+RUN php -r 'exit(version_compare(PHP_VERSION, "8.2.35", "<") ? 1 : 0);'
+
+# PHP2Shell mitigation — defence in depth only, the real fix is the
+# pinned base above. The app doesn't use upload-progress tracking.
+RUN echo 'session.upload_progress.enabled = 0' > /usr/local/etc/php/conf.d/php2shell-mitigation.ini
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
